@@ -1,72 +1,101 @@
-import socket
 import threading
 import pickle
-import sys
+import controller
+import models  
+import socket_manager
+from chess_engine import ChessEngine
 
-ip = "127.0.0.1"
-port = 5432
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind((ip, port))
-
-client_socket = None
-
-services = {
-    "move": move_service,
-    "chat": chat_service,
-}
-
-def handle_client():
-    global client_socket
-    server_socket.listen()
+def start_server():
+    colors = ["white", "black"]
     while True:
-            client_socket, addr = server_socket.accept()
-            data = client_socket.recv(1024)
-            request = pickle.loads(data)
-            thrd=threading.Thread(target=controller_handler, args=(client_socket, addr, request))
-            thrd.start()
+        #bekleme
+        player_socket, address = socket_manager.server_socket.accept()
+        
+        if len(connected_players) >= 2:
+            print(f"[REJECTED] {address} bağlanmaya çalıştı ancak oda dolu.")
+            # İstemciye odanın dolu olduğunu bildiren bir paket yolla.
+            error_packet = {"type": "error", "message": "Room is full!"}
+            player_socket.send(pickle.dumps(error_packet))
+            player_socket.close()
+            continue
+        
 
-def controller_handler(client_socket, addr, request):
-    if client_socket:
-        try:
-            requested_service = services.get(request["service"])
-            if requested_service:
-                response = requested_service(request)
-                client_socket.send(pickle.dumps(response))
-            else:
-                client_socket.send(pickle.dumps({"error": "unknown service"}))
-                
-            client_socket.close()
+        assigned_color = colors[len(connected_players)]
+        connected_players[player_socket] = assigned_color
 
-        except Exception as e:
-                print(f"Error receiving data from client: {e}")
-                client_socket.close()
-                client_socket = None
-                print(f"Client disconnected {addr}")
-
-def move_service(command):
-    if client_socket:
-        try:
-            data = command["command"]
-            return data
-        except Exception as e:
-            print(f"Error sending command to client: {e}")
-    else:
-        print("Client is not connected.")
-
-def chat_service(message):
-    if client_socket:
-        try:
-            data = message["message"]
-            return data
-        except Exception as e:
-            print(f"Error sending message to client: {e}")
-    else:
-        print("Client is not connected.")
-
+        player_thread = threading.Thread(target=handle_player_connection, args=(player_socket, address))
+        player_thread.start()
 
 if __name__ == "__main__":
+    connected_players=[]
+    current_turn="white"
+    start_server()
     print("Starting server...")
-    controller_thread = threading.Thread(target=controller_handler)
+    controller_thread = threading.Thread(target=controller.handle_client)
     controller_thread.start()
     controller_thread.join()
     print("Server shutting down.")
+
+def handle_player_connection(player_socket, address, assigned_color):
+    
+    
+    global current_turn
+
+    initial_packet = {
+        "type": "game_start", 
+        "color": assigned_color,
+        "message": f"Joined as {assigned_color}"
+    }
+    
+    player_socket.send(pickle.dumps(initial_packet))
+    
+    while True: 
+        try:
+            data = player_socket.recv(4096)
+            if not data:
+                break
+            received_packet = pickle.loads(data)
+            print(f"[{assigned_color}] Packet received: {received_packet}")
+            if received_packet["type"] == "move":
+                start_pos = received_packet["start"]
+                end_pos = received_packet["end"]
+            
+                if current_turn!=assigned_color:
+                    pass
+                if ChessEngine.is_valid_move(assigned_color,start_pos,end_pos):
+                    ChessEngine.update_board(start_pos,end_pos)
+                    if current_turn == "white":
+                        current_turn == "black"
+                    else:
+                        current_turn == "white"
+                    success_packet = {
+                            "type": "update_board",
+                            "start": start_pos,
+                            "end": end_pos,
+                            "next_turn": current_turn
+                        }
+                    ChessEngine.broadcast(success_packet)
+                else:
+                    error_packet = {
+                        "type": "error", 
+                        "message": "Geçersiz satranç hamlesi!"
+                    }
+                    player_socket.send(pickle.dumps(error_packet))
+
+            elif received_packet["type"] == "message":
+                pass
+        except EOFError:
+            break
+        except Exception as e:
+            print(f"[ERROR] {assigned_color}: {e}")
+            break
+    if player_socket in connected_players:
+        del connected_players[player_socket]
+    player_socket.close()
+
+
+
+
+
+
+    

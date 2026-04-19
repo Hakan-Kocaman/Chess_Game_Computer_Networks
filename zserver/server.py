@@ -61,9 +61,6 @@ def handle_player_connection(player_socket, address, assigned_color):
                 if current_turn!=assigned_color:
                     pass
 
-
-
-
                 if ChessEngine.is_valid_move(assigned_color,start_pos,end_pos):
                     ChessEngine.update_board(start_pos,end_pos)
                     if current_turn == "white":
