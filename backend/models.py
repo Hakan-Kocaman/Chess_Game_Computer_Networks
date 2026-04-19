@@ -1,105 +1,39 @@
 from abc import ABC, abstractmethod
-     
+
+game_board = [[None for _ in range(8)] for _ in range(8)]
      # Abstract Taş Class
 class ChessPiece(ABC):
-    def __init__(self, color, symbol):
+    def __init__(self, color, position):
         self.color = color
-        self.isDead = False
-        self.symbol = symbol
+        self.position = position
 
-    @abstractmethod
-    def move(self, board, start_pos, end_pos):
-        pass
-
-    @abstractmethod
-    def get_possible_moves(self, board, position):
-        pass
-
-    @abstractmethod
-    def is_valid_move(self, board, start_pos, end_pos):
-        pass
-    
     # Piyon Class
 class Pawn(ChessPiece):
-    def __init__(self, color, symbol):
-        super().__init__(color, symbol)
-    
-    def move(self, board, start_pos, end_pos):
-        pass
-    
-    def get_possible_moves(self, board, position):
-        pass
-
-    def is_valid_move(self, board, start_pos, end_pos):
-        pass
+    def __init__(self, color, position):
+        super().__init__(color, position)
 
     # At Class    
 class Knight(ChessPiece):
-    def __init__(self, color, symbol):
-        super().__init__(color, symbol)
-    
-    def move(self, board, start_pos, end_pos):
-        pass
-    
-    def get_possible_moves(self, board, position):
-        pass
-    
-    def is_valid_move(self, board, start_pos, end_pos):
-        pass
+    def __init__(self, color, position):
+        super().__init__(color, position)
 
     # Fil Class
 class Bishop(ChessPiece):
-    def __init__(self, color, symbol):
-        super().__init__(color, symbol)
-    
-    def move(self, board, start_pos, end_pos):
-        pass
-    
-    def get_possible_moves(self, board, position):
-        pass
-    
-    def is_valid_move(self, board, start_pos, end_pos):
-        pass
+    def __init__(self, color, position):
+        super().__init__(color, position)
 
     # Kale Class
 class Rook(ChessPiece):
-    def __init__(self, color, symbol):
-        super().__init__(color, symbol)
-    
-    def move(self, board, start_pos, end_pos):
-        pass
-    
-    def get_possible_moves(self, board, position):
-        pass
-    
-    def is_valid_move(self, board, start_pos, end_pos):
-        pass
+    def __init__(self, color, position):
+        super().__init__(color, position)
 
     # Vezir Class
 class Queen(ChessPiece):
-    def __init__(self, color, symbol):
-        super().__init__(color, symbol)
-    
-    def move(self, board, start_pos, end_pos):
-        pass
-    
-    def get_possible_moves(self, board, position):
-        pass
-    
-    def is_valid_move(self, board, start_pos, end_pos):
-        pass
+    def __init__(self, color, position):
+        super().__init__(color, position)
 
     # Şah Class
 class King(ChessPiece):
-    def __init__(self, color, symbol):
-        super().__init__(color, symbol)
+    def __init__(self, color, position):
+        super().__init__(color, position)
     
-    def move(self, board, start_pos, end_pos):
-        pass
-    
-    def get_possible_moves(self, board, position):
-        pass
-    
-    def is_valid_move(self, board, start_pos, end_pos):
-        pass
-
