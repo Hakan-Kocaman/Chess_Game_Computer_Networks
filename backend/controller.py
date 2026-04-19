@@ -1,6 +1,7 @@
 import threading
 import pickle
 import socket_manager
+import services
 
 # request= {
 #     "URL": determines the service,
@@ -8,6 +9,11 @@ import socket_manager
 # }
 
 server_socket = socket_manager.server_socket
+
+services = {
+    "move": services.move_service,
+    "chat": services.chat_service,
+}
 
 def controller_handler(client_socket, addr, request):
     if client_socket:
@@ -27,33 +33,17 @@ def controller_handler(client_socket, addr, request):
                 client_socket = None
                 print(f"Client disconnected {addr}")
 
-def move_service(request_body):
-    try:
-        data = request_body
-        return data
-    except Exception as e:
-         print(f"Error sending command to client: {e}")
-
-def chat_service(request_body):
-    try:
-        data = request_body["message"]
-        return data
-    except Exception as e:
-            print(f"Error sending message to client: {e}")
-
-services = {
-    "move": move_service,
-    "chat": chat_service,
-}
-
-def handle_client():
-    socket_manager.listen()
+def handle_client(client_socket):
     while True:
-            client_socket, addr = socket_manager.accept()
-            data = client_socket.recv(1024)
-            request = pickle.loads(data)
-            thrd=threading.Thread(target=controller_handler, args=(client_socket, addr, request))
-            thrd.start()
+        data = client_socket.recv(1024)
+        request = pickle.loads(data)
+        controller_thread=threading.Thread(target=controller_handler, args=(client_socket, request))
+        controller_thread.start()
+
+
+
+
+
 
 
 
