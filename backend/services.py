@@ -7,6 +7,25 @@ def chat_service(player_color, request_body):
             to_socket = player.socket
             return to_socket, {"from": player_color, "message": request_body}
 
+def func(directions, selected_piece, possible_moves):
+    for dx, dy in directions:
+            for step in range(1, 8):
+                nx = selected_piece.position[0] + dx * step
+                ny = selected_piece.position[1] + dy * step
+            
+                if not (0 <= nx < 8 and 0 <= ny < 8):
+                    break  # tahtadan çıktı
+            
+                target = game_board[nx][ny]
+            
+                if target is None:
+                    possible_moves.append((nx, ny))  # boş kare, devam
+                elif target.color != player_color:
+                    possible_moves.append((nx, ny))  # düşman, yiye dur
+                    break
+                else:
+                    break  # kendi taşı, dur
+                
 def get_possible_moves_service(player_color, request_body):
     # expected request_body: {selected_piece: ChessPiece}
     to_socket = None
@@ -25,30 +44,9 @@ def get_possible_moves_service(player_color, request_body):
     if isinstance(selected_piece, Pawn):
         pass
     elif isinstance(selected_piece, Rook):
-        for x in range(1,7):
-            if selected_piece.position[0] + x < 8 and game_board[selected_piece.position[0] + x][selected_piece.position[1]] is None:
-                possible_moves.append((selected_piece.position[0] + x, selected_piece.position[1]))
-            elif selected_piece.position[0] + x >= 8 or game_board[selected_piece.position[0] + x][selected_piece.position[1]].color != player_color:
-                possible_moves.append((selected_piece.position[0] + x, selected_piece.position[1]))
-                break              
-        for x in range(1,7):
-            if selected_piece.position[0] - x >= 0 and game_board[selected_piece.position[0] - x][selected_piece.position[1]] is None:
-                possible_moves.append((selected_piece.position[0] - x, selected_piece.position[1]))  
-            elif selected_piece.position[0] - x < 0 or game_board[selected_piece.position[0] - x][selected_piece.position[1]].color != player_color:
-                possible_moves.append((selected_piece.position[0] - x, selected_piece.position[1]))
-                break
-        for y in range(1,7):
-            if selected_piece.position[1] + y < 8 and game_board[selected_piece.position[0]][selected_piece.position[1] + y] is None:
-                possible_moves.append((selected_piece.position[0], selected_piece.position[1] + y))
-            elif selected_piece.position[1] + y >= 8 or game_board[selected_piece.position[0]][selected_piece.position[1] + y].color != player_color:
-                possible_moves.append((selected_piece.position[0], selected_piece.position[1] + y))
-                break
-        for y in range(1,7):
-            if selected_piece.position[1] - y >= 0 and game_board[selected_piece.position[0]][selected_piece.position[1] - y] is None:
-                possible_moves.append((selected_piece.position[0], selected_piece.position[1] - y))
-            elif selected_piece.position[1] - y < 0 or game_board[selected_piece.position[0]][selected_piece.position[1] - y].color != player_color:
-                possible_moves.append((selected_piece.position[0], selected_piece.position[1] - y))
-                break
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+        func(directions, selected_piece, possible_moves)
 
     elif isinstance(selected_piece, Knight):
         pass

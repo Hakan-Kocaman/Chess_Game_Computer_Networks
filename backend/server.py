@@ -29,9 +29,9 @@ def start_server():
 
         new_player = player(player_socket, assigned_color)
         player_list.append(new_player) 
+        handle_player_connection(player_socket, address, assigned_color)
 
-        player_thread = threading.Thread(target=handle_player_connection, args=(player_socket, address, assigned_color))
-        player_thread.start()
+        
 
 def handle_player_connection(player_socket, address, assigned_color):
     global current_turn
@@ -44,13 +44,13 @@ def handle_player_connection(player_socket, address, assigned_color):
     handshake = pickle.dumps(initial_packet)
     player_socket.send(handshake)
     
-    while True: 
-        try:
-            controller_thread = threading.Thread(target=gateway.handle_client, args=(player_socket))
-            controller_thread.start()
-        except Exception as e:
-            print(f"[ERROR] {assigned_color}: {e}")
-            break
+    
+    try:
+        controller_thread = threading.Thread(target=gateway.handle_client, args=(player_socket))
+        controller_thread.start()
+    except Exception as e:
+        print(f"[ERROR] {assigned_color}: {e}")
+        
     if player_socket in player_list:
         del player_list[player_socket]
     player_socket.close()
