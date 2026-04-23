@@ -23,7 +23,7 @@ def controller_handler(client_socket, addr, request):
         try:
             requested_controller = controller_list.get(request["URL"])
             if requested_controller:
-                response = requested_controller(request["from"], request["body"]) 
+                response = requested_controller(request) 
                 if not response:
                      print(f"Controller {request['URL']} returned an error.")       
             else:

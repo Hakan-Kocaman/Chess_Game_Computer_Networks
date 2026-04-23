@@ -1,20 +1,23 @@
 import pickle
 import services
 
-def chat_controller(player_color, request_body):
-    to_socket, response = services.chat_service(player_color, request_body)
-    if to_socket:
-        to_socket.send(pickle.dumps(response))
+def chat_controller(request):
+    to_socket, response = services.chat_service(request)
+    broadcast(to_socket, response)
     return {"success": True}
 
-def get_possible_moves_controller(player_color, request_body):
-    to_socket, response = services.get_possible_moves_service(player_color, request_body)
-    if to_socket:
-        to_socket.send(pickle.dumps(response))
+def get_possible_moves_controller(request):
+    to_socket, response = services.get_possible_moves_service(request)
+    broadcast(to_socket, response)
     return {"success": True}
 
-def move_controller(player_color, request_body):
-    to_socket, response = services.move_service(player_color, request_body)
+def move_controller(request):
+    to_socket, response = services.move_service(request)
+    broadcast(to_socket, response)
+    return {"success": True}
+
+def broadcast(to_socket, response):
     if to_socket:
-        to_socket.send(pickle.dumps(response))
+        for socket in to_socket:
+            socket.send(pickle.dumps(response))
     return {"success": True}
