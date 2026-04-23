@@ -1,27 +1,31 @@
 import threading
 import pickle
 import socket_manager
-import services
+import controllers
+
 
 # request= {
 #     "URL": determines the service,
+#     "from": player color, 
 #     "body": {} request data
 # }
 
 server_socket = socket_manager.server_socket
 
-services = {
-    "move": services.move_service,
-    "chat": services.chat_service,
+controller_list = {
+   "chat": controllers.chat_controller,
+   "get_possible_moves": controllers.get_possible_moves_controller,
+   "move": controllers.move_controller
 }
 
 def controller_handler(client_socket, addr, request):
     if client_socket:
         try:
-            requested_service = services.get(request["URL"])
-            if requested_service:
-                response = requested_service(request["body"])
-                client_socket.send(pickle.dumps(response))
+            requested_controller = controller_list.get(request["URL"])
+            if requested_controller:
+                response = requested_controller(request) 
+                if not response:
+                     print(f"Controller {request['URL']} returned an error.")       
             else:
                 client_socket.send(pickle.dumps({"error": "unknown service"}))
                 

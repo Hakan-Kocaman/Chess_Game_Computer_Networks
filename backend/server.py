@@ -1,18 +1,17 @@
 import threading
 import pickle
-import controller
-import models  
+import backend.gateway as gateway
+import models 
+from player import player, player_list
 import random
 import socket_manager
-from chess_engine import ChessEngine
+
 
 def start_server():
-    global connected_players, current_turn, colors
+    global current_turn, colors
     while True:
         #bekleme
-        player_socket, address = socket_manager.server_socket.accept()
-        
-        if len(connected_players) >= 2:
+        if len(player_list) >= 2:
             print(f"[REJECTED] {address} bağlanmaya çalıştı ancak oda dolu.")
             # İstemciye odanın dolu olduğunu bildiren bir paket yolla.
             error_packet = {"type": "error", "message": "Room is full!"}
@@ -21,17 +20,18 @@ def start_server():
             player_socket.close()
             start_server()
 
+        player_socket, address = socket_manager.server_socket.accept()
         assigned_color = None
-        if connected_players.clear():
+        if player_list.clear():
             assigned_color = random.choice(colors)
-            connected_players[player_socket] = assigned_color
         else: 
-            assigned_color = "black" if "white" in connected_players.values() else "white"
-            connected_players[player_socket] = assigned_color
-        
+            assigned_color = "black" if "white" in player_list.values() else "white"
 
-        player_thread = threading.Thread(target=handle_player_connection, args=(player_socket, address, assigned_color))
-        player_thread.start()
+        new_player = player(player_socket, assigned_color)
+        player_list.append(new_player) 
+        handle_player_connection(player_socket, address, assigned_color)
+
+        
 
 def handle_player_connection(player_socket, address, assigned_color):
     global current_turn
@@ -44,23 +44,21 @@ def handle_player_connection(player_socket, address, assigned_color):
     handshake = pickle.dumps(initial_packet)
     player_socket.send(handshake)
     
-    while True: 
-        try:
-            controller_thread = threading.Thread(target=controller.handle_client, args=(player_socket))
-            controller_thread.start()
-        except Exception as e:
-            print(f"[ERROR] {assigned_color}: {e}")
-            break
-    if player_socket in connected_players:
-        del connected_players[player_socket]
+    
+    try:
+        controller_thread = threading.Thread(target=gateway.handle_client, args=(player_socket))
+        controller_thread.start()
+    except Exception as e:
+        print(f"[ERROR] {assigned_color}: {e}")
+        
+    if player_socket in player_list:
+        del player_list[player_socket]
     player_socket.close()
 
 
 if __name__ == "__main__":
-    connected_players={}
     current_turn="white"
     colors = ["white", "black"]
-    engine = ChessEngine()
     
     print("Starting server...")
     start_server()
