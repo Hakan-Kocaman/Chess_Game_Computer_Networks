@@ -1,7 +1,12 @@
+
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from models.ChessPiece import game_board
 from player import player_list
-from models import game_board
 from dtos.responses import move_response_body, chat_response_body, get_possible_moves_response_body
-from dtos import response as response_dto
+from dtos.responses import response as response_dto
 
 def chat_service(request):
     reciever_list = []

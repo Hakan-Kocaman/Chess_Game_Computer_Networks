@@ -3,6 +3,7 @@ import pickle
 import socket_manager
 import controllers
 from dtos.requests import request
+from logger import logger
 
 
 # request= {
@@ -24,19 +25,15 @@ def controller_handler(client_socket, addr, request):
         try:
             requested_controller = controller_list.get(request.URL)
             if requested_controller:
+                logger.info(f"Received request for {request.URL} from {request.sender}")
                 response = requested_controller(request) 
                 if not response:
-                     print(f"Controller {request.URL} returned an error.")       
+                    logger.error(f"Controller {request.URL} did not return a response for request from {request.sender}")    
             else:
                 client_socket.send(pickle.dumps({"error": "unknown service"}))
-                
-            client_socket.close()
-
+                logger.error(f"Unknown service requested from {request.sender}: {request.URL}")
         except Exception as e:
-                print(f"Error receiving data from client: {e}")
-                client_socket.close()
-                client_socket = None
-                print(f"Client disconnected {addr}")
+                logger.error(f"Error receiving data from client: {e}")
 
 def handle_client(client_socket):
     while True:
