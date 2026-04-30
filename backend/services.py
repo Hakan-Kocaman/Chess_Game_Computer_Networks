@@ -1,55 +1,68 @@
 from player import player_list
-from models import ChessPiece, Pawn, Rook, Knight, Bishop, Queen, King, game_board
+from models import game_board
+from dtos.responses import move_response_body, chat_response_body, get_possible_moves_response_body
+from dtos import response as response_dto
 
 def chat_service(request):
-    to_socket = []
-    player_color = request["from"]
-    request_body = request["body"]
-    for player in player_list:
-        if player.color != player_color:
-            to_socket.append(player.socket)
-            request["body"]["message"] = request_body
-            return to_socket, request
+    reciever_list = []
 
-            break  # kendi taşı, dur
+    for player in player_list:
+        if player.color != request.sender:
+            reciever_list.append(player.socket)
+    
+    response = response_dto(
+                URL=request.URL,
+                sender=request.sender,
+                reciever_list=reciever_list,
+                body=chat_response_body(
+                    message=request.body.message
+                    )
+            )
+    return response
+
                 
 def get_possible_moves_service(request):
-    # expected request_color: "white" or "black"
-    # expected request_body: {selected_piece: ChessPiece}
-    player_color = request["from"]
-    request_body = request["body"]
 
-    to_socket = []
+    reciever_list = []
     for player in player_list:
-        if player.color == player_color:
-            to_socket.append(player.socket)
+        if player.color == request.sender:
+            reciever_list.append(player.socket)
             break
 
-    selected_piece = request_body.get("selected_piece")
+    selected_piece = request.body.selected_piece
     selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]] 
     
     possible_moves = selected_piece.get_possible_moves()
 
-    request["body"]["possible_moves"] = possible_moves
-
-    return to_socket, request
+    response = response_dto(
+        URL=request.URL,
+        sender=request.sender,
+        reciever_list=reciever_list,
+        body=get_possible_moves_response_body(
+            possible_moves=possible_moves
+            )
+    )
+    return response
 
 def move_service(request):
-    player_color = request["from"]
-    request_body = request["body"]
 
-    to_socket = []
+
+    reciever_list = []
     for player in player_list:
-        to_socket.append(player.socket)
+        reciever_list.append(player.socket)
 
-    selected_piece = request_body.get("selected_piece")
+    selected_piece = request.body.get("selected_piece")
     selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]] 
     
-    move_result = selected_piece.move(request_body.get("new_position"))
-
-    request["body"]["move_result"] = move_result
-
-    return to_socket, request
+    response = response_dto(
+        URL=request.URL,
+        sender=request.sender,
+        reciever_list=reciever_list,
+        body=move_response_body(
+            move_result=selected_piece.move(request.body.new_position))
+            )
+    
+    return response
 
                 
  
