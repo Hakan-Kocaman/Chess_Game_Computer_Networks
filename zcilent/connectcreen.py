@@ -4,8 +4,9 @@ import sys
 from PySide6.QtWidgets import QApplication, QMessageBox, QPushButton, QStackedWidget
 from PySide6.QtUiTools import QUiLoader
 import socket
-from frame import App
-from requests import request
+from frame import Frame
+from requests import request, move_request_body
+
 import pickle
 
 class Connect:
@@ -23,7 +24,7 @@ class Connect:
         self.stack.setWindowTitle("Ag Laboratuvari - Satranc")
         self.stack.resize(800, 600)
 
-        self.play_screen= App()
+        self.play_screen= Frame()
 
         self.stack.addWidget(self.window)                       #Stack yapisina iki ekran da eklendi 
         self.stack.addWidget(self.play_screen.window)
@@ -36,6 +37,11 @@ class Connect:
         self.stack.setCurrentIndex(0)
 
     def connect_pressed(self):
+            server_ip=self.window.lineEdit.text()
+            username=self.window.lineEdit_2.text()
+            server_port=5050
+
+
             if username =="":
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
@@ -49,9 +55,8 @@ class Connect:
                 msg.setWindowTitle("Error")
                 msg.exec()
 
-            server_ip=self.window.lineEdit.text()
-            username=self.window.lineEdit_2.text()
-            server_port=5001
+            
+            
             
             try :
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -72,13 +77,16 @@ class Connect:
                 #Serverdan onay cevabi bekleniyor
                 received_pickle=self.socket.recv(1024)
                 server_response=pickle.loads(received_pickle)
-                if server_response.URL == "/access_granted":
+                if server_response["type"] == "game_start":
                     print("[CLIENT] Erişim onaylandi! Tahtaya geçiliyor...")
                     self.stack.setCurrentIndex(1)
 
-                    starter_game_board=server_response.body
+                    starter_game_board=server_response["game_board"]
 
                     self.play_screen.load_board(starter_game_board)
+
+                    self.play_screen.move_signal.connect(self.send_move)
+                    self.play_screen.possible_moves_signal.connect(self.send_possible_moves_request)
 
 
                 else:
@@ -96,8 +104,19 @@ class Connect:
                 msg.setText("Error: cannot connected")
                 msg.setWindowTitle("Error")
                 msg.exec()
+
+
+
+    def send_move(self, from_x,from_y,to_x,to_y):
+
+        #Pozisyon tuple olarak gonderiliyor ama server tarafinda position kullanilmis buna karar verilecek############################
+
+        packet_body=move_request_body(selected_piece=(from_x,from_y),new_position=(to_x,to_y))
+        packet= request(URL="move",sender=self.username,body=packet_body)
+        self.socket.sendall(pickle.dumps(packet))
                 
-                     
+    def send_possible_moves_request(self):
+        pass
             
 
                 

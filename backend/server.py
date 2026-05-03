@@ -4,6 +4,8 @@ import gateway as gateway
 from player import player, player_list
 import socket_manager
 from logger import logger
+from GameBoard import GameBoard
+
 
 def start_server():
     global current_turn, colors
@@ -23,7 +25,9 @@ def handle_player_connection(new_player):
     initial_packet = {
         "type": "game_start", 
         "player": new_player,
-        "message": f"Joined as {new_player.get_name()}"
+        "message": f"Joined as {new_player.get_name()}",
+        "game_board": GameBoard.starting_board
+
     }
     handshake = pickle.dumps(initial_packet)
     new_player.socket.send(handshake)   
