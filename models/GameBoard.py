@@ -8,7 +8,7 @@ from models.Rook import Rook
 
 
 class GameBoard:
-        starting_board = [
+    starting_board = [
     ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"], # Siyah taşlar
     ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
     ["·", "·", "·", "·", "·", "·", "·", "·"], # Boş kareler
