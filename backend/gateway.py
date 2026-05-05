@@ -20,7 +20,7 @@ controller_list = {
    "move": controllers.move_controller
 }
 
-def controller_handler(client_socket, addr, request):
+def controller_handler(client_socket, request):
     if client_socket:
         try:
             requested_controller = controller_list.get(request['URL'])
