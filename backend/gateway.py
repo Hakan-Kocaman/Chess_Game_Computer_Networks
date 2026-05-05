@@ -26,8 +26,8 @@ def controller_handler(client_socket, addr, request):
             requested_controller = controller_list.get(request["URL"])
             if requested_controller:
                 logger.info(f"Received request for {request["URL"]} from {request["sender"]}")
-                response = requested_controller(request) 
-                if not response:
+                response = requested_controller(request)    
+                if response != {"success": True}:
                     logger.error(f"Controller {request["URL"]} did not return a response for request from {request.sender}")    
             else:
                 client_socket.send(pickle.dumps({"error": "unknown service"}))

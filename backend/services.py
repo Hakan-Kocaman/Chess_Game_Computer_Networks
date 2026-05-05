@@ -5,6 +5,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from models.ChessPiece import game_board
 from player import player_list
+from logger import logger
+import pickle
 from dtos.responses import move_response, get_possible_moves_response, chat_response, start_game_response, turn_change_response, finish_game_response
 
 def chat_service(request):
@@ -17,11 +19,10 @@ def chat_service(request):
     response = chat_response(
                 URL=request.URL,
                 sender=request.sender,
-                reciever_list=reciever_list,
                 message=request.body
             )
-    return response
-
+    
+    broadcast(response, reciever_list)
                 
 def get_possible_moves_service(request):
 
@@ -39,10 +40,10 @@ def get_possible_moves_service(request):
     response = get_possible_moves_response(
         URL=request.URL,
         sender=request.sender,
-        reciever_list=reciever_list,
         possible_moves=possible_moves
     )
-    return response
+    broadcast(response, reciever_list)
+
 
 def move_service(request):
 
@@ -56,11 +57,10 @@ def move_service(request):
     response = move_response(
         URL=request.URL,
         sender=request.sender,
-        reciever_list=reciever_list,
         move_result= selected_piece.move(request.new_position)
     )
-    
-    return response
+    broadcast(response, reciever_list)
+
 
 def start_game_service():
     reciever_list = []
@@ -74,11 +74,11 @@ def start_game_service():
     response = start_game_response( 
         URL="start_game",
         sender="server",
-        reciever_list=reciever_list,
         white=white_player,
         black=black_player
     )
-    return response
+    broadcast(response, reciever_list)
+
 
 def turn_change_service(current_turn):
     reciever_list = []
@@ -88,10 +88,9 @@ def turn_change_service(current_turn):
     response = turn_change_response(
         URL="turn_change",
         sender="server",
-        reciever_list=reciever_list,
         current_turn=current_turn
     )
-    return response
+    broadcast(response, reciever_list)
 
 def finish_game_service(winner,loser,result):
     reciever_list = []
@@ -101,9 +100,15 @@ def finish_game_service(winner,loser,result):
     response = finish_game_response(
         URL="finish_game",
         sender="server",
-        reciever_list=reciever_list,
         winner=winner,
         loser=loser,
         result=result
     )
-    return response
+    broadcast(response, reciever_list)
+
+
+def broadcast(response, reciever_list):
+    logger.info(f"Broadcasting response for {response.URL} to {len(reciever_list)} clients.")
+    if reciever_list:
+        for socket in reciever_list:
+            socket.send(pickle.dumps(response))

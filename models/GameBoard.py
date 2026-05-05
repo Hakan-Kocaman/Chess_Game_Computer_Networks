@@ -55,3 +55,4 @@ class GameBoard:
         self.board[7][4] = King("black", (7, 4))
 
 
+

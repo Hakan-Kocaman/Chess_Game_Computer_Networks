@@ -1,6 +1,6 @@
 import threading
 import pickle
-from backend.controllers import start_game_controller
+from backend.services import start_game_service
 import gateway as gateway
 from player import player, player_list
 import socket_manager
@@ -34,7 +34,7 @@ def handle_player_connection(new_player):
     new_player.socket.send(handshake) 
 
     if len(player_list) > 1 and game_state != game_states[1]:  
-        success = start_game_controller()
+        success = start_game_service()
         if success:
             game_state = game_states[1] 
             logger.info("Two players connected. Starting the game.")
