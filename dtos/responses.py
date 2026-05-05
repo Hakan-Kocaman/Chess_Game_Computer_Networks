@@ -28,9 +28,6 @@ class start_game_response():
         self.white = white
         self.black = black
 
-
-
-
 class turn_change_response():
     def __init__(self,URL, sender, reciever_list, current_turn):
         self.URL = URL
@@ -39,8 +36,6 @@ class turn_change_response():
         self.current_turn = current_turn
 
         
-
-
 class finish_game_response():
     def __init__(self, URL, sender, reciever_list, winner,loser,result):
         self.URL = URL

@@ -24,7 +24,7 @@ def handle_player_connection(new_player):
     global current_turn, game_state, game_states
 
     initial_packet = {
-        "type": "game_start", 
+        "URL": "game_start", 
         "player": new_player,
         "board": game_board,
         "state": game_state,

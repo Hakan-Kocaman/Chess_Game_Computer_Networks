@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox, QPushButton, QStackedWi
 from PySide6.QtUiTools import QUiLoader
 import socket
 from frame import Frame
-from requests import request, move_request_body
+from requests import move_request
 
 import pickle
 
@@ -69,9 +69,14 @@ class Connect:
                 print() 
                             
                 #ilk paket hazirlanip gonderiliyor
-                connection_packet=request(URL="/login",sender=self.username,body=None)
+                connection_packet=move_request(
+                    URL="/login",
+                    sender=self.username,
+                    selected_piece=None,
+                    new_position=None
+                    )
                 pickled_packet=pickle.dumps(connection_packet)
-                self.socket.sendall(pickled_packet)
+                self.socket.send(pickled_packet)
                 print(f"[CLIENT] Login isteği gönderildi: Oyuncu -> {self.username}")
                 
                 #Serverdan onay cevabi bekleniyor
@@ -111,9 +116,13 @@ class Connect:
 
         #Pozisyon tuple olarak gonderiliyor ama server tarafinda position kullanilmis buna karar verilecek############################
 
-        packet_body=move_request_body(selected_piece=(from_x,from_y),new_position=(to_x,to_y))
-        packet= request(URL="move",sender=self.username,body=packet_body)
-        self.socket.sendall(pickle.dumps(packet))
+        request=move_request(
+            URL="move",
+            sender=self.username,
+            selected_piece=from_x,
+            new_position=to_x
+        )
+        self.socket.sendall(pickle.dumps(request))
                 
     def send_possible_moves_request(self):
         pass
