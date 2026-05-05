@@ -20,6 +20,19 @@ def move_controller(request):
     broadcast(response)
     return {"success": True}
 
+
+def start_game_controller():
+    response = services.start_game_service()
+    logger.info(f"Game Started By Server. Broadcasting start game response to all clients.")
+    broadcast(response)
+    return {"success": True}
+
+def turn_change_controller(current_turn):
+    response = services.turn_change_service(current_turn)
+    logger.info(f"Turn is now on {current_turn}.")
+    broadcast(response)
+    return {"success": True}
+
 def broadcast(response):
     logger.info(f"Broadcasting response for {response.URL} to {len(response.reciever_list)} clients.")
     if response.reciever_list:

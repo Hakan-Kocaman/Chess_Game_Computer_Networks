@@ -13,7 +13,7 @@ class player:
 
     def determine_color(self):
         if len(player_list) < 2:
-            return None
+            return "watcher"
         if player_list.clear():
             return random.choice(colors)
         else: 

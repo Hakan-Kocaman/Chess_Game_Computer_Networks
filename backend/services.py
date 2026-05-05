@@ -51,24 +51,62 @@ def get_possible_moves_service(request):
 
 def move_service(request):
 
-
     reciever_list = []
     for player in player_list:
         reciever_list.append(player.socket)
 
     selected_piece = request.body.get("selected_piece")
-    selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]] 
+    selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]]
     
     response = response_dto(
         URL=request.URL,
         sender=request.sender,
         reciever_list=reciever_list,
-        body=move_response_body(
-            move_result=selected_piece.move(request.body.new_position))
-            )
+        move_result= selected_piece.move(request.body.get("new_position"))
+    )
     
     return response
 
-                
- 
+def start_game_service():
+    reciever_list = []
+    for player in player_list:
+        if player.color in ["white"]:
+            white_player = player
+        elif player.color in ["black"]:
+            black_player = player
+        reciever_list.append(player.socket)
+
+    response = {
+        "URL": "game_start",
+        "sender": "server",
+        "reciever_list": reciever_list,
+        "white": white_player,
+        "black": black_player
+    }
+    return response
+
+def turn_change_service(current_turn):
+    reciever_list = []
+    for player in player_list:
+        reciever_list.append(player.socket)
+
+    response = { 
+        "URL": "turn_change",
+        "sender": "server",
+        "reciever_list": reciever_list,
+        "current_turn": current_turn
+    }
+
+def finish_game_service(winner,loser,result):
+    reciever_list = []
+    for player in player_list:
+        reciever_list.append(player.socket)
     
+    response = {
+        "URL": "finish_game",
+        "sender": "server",
+        "reciever_list": reciever_list,
+        "winner": winner,
+        "loser": loser,
+        "result": result
+    }
