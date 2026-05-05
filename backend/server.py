@@ -7,7 +7,7 @@ import socket_manager
 from logger import logger
 from models.GameBoard import game_board
 
-game_states = ["waiting", "game", "result"]
+game_states = ["waiting", "game"]
 
 def start_server():
     global current_turn, game_state, game_states
@@ -24,7 +24,7 @@ def handle_player_connection(new_player):
     global current_turn, game_state, game_states
 
     initial_packet = {
-        "URL": "game_start", 
+        "URL": "initial", 
         "player": new_player,
         "board": game_board,
         "state": game_state,
@@ -33,7 +33,7 @@ def handle_player_connection(new_player):
     handshake = pickle.dumps(initial_packet)
     new_player.socket.send(handshake) 
 
-    if len(player_list) > 1 and game_state == game_states[0]:  
+    if len(player_list) > 1 and game_state != game_states[1]:  
         success = start_game_controller()
         if success:
             game_state = game_states[1] 
