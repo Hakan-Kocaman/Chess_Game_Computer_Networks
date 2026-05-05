@@ -1,19 +1,26 @@
+from abc import ABC
 
-class move_request():
-    def __init__(self, URL, sender, selected_piece, new_position):
+class request(ABC):
+    def __init__(self, URL, sender, body):
         self.URL = URL
         self.sender = sender
+
+    
+class move_request(request):
+    def __init__(self, URL, sender, selected_piece, new_position):
+        super().__init__(URL, sender)
+
         self.selected_piece = selected_piece
         self.new_position = new_position
 
-class chat_request():
+class chat_request(request):
     def __init__(self, URL, sender, message):
-        self.URL = URL
-        self.sender = sender
+        super().__init__(URL, sender)
+
         self.message = message
 
-class get_possible_moves_request():
+class get_possible_moves_request(request):
     def __init__(self, URL, sender, selected_piece):
-        self.URL = URL
-        self.sender = sender
+        super().__init__(URL, sender)
+
         self.selected_piece = selected_piece
