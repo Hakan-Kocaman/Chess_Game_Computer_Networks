@@ -8,6 +8,16 @@ from models.Rook import Rook
 
 
 class GameBoard:
+        starting_board = [
+    ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"], # Siyah taşlar
+    ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
+    ["·", "·", "·", "·", "·", "·", "·", "·"], # Boş kareler
+    ["·", "·", "·", "·", "·", "·", "·", "·"],
+    ["·", "·", "·", "·", "·", "·", "·", "·"],
+    ["·", "·", "·", "·", "·", "·", "·", "·"],
+    ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"], # Beyaz taşlar
+    ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"]
+    ]
     def __init__(self):
         self.board = [[None for _ in range(8)] for _ in range(8)]
         self.init_pieces()
@@ -43,3 +53,5 @@ class GameBoard:
         # Initialize kings
         self.board[0][4] = King("white", (0, 4))
         self.board[7][4] = King("black", (7, 4))
+
+
