@@ -1,6 +1,7 @@
 
     # Piyon Class
-from ChessPiece import ChessPiece, game_board
+from ChessPiece import ChessPiece
+from GameBoard import game_board
 
 
 class Pawn(ChessPiece):
@@ -9,8 +10,8 @@ class Pawn(ChessPiece):
         self.move_pattern = [(0, 1), (0, 2)]
         self.attacking_pattern = [(-1, 1), (1, 1)]
         if color == "black":
-            self.move_pattern = self.move_pattern * -1  # Siyah piyonlar aşağı hareket eder
-            self.attacking_pattern = self.attacking_pattern * -1  # Siyah piyonlar çapraz aşağı saldırır
+            self.move_pattern = [(0,-1), (0,-2)] # Siyah piyonlar aşağı hareket eder
+            self.attacking_pattern = [(-1, -1), (1, -1)]  # Siyah piyonlar çapraz aşağı saldırır
         self.FirstMove = True  # Piyonun ilk hamlesi 
 
     def get_possible_moves(self):

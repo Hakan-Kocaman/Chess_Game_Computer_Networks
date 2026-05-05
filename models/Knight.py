@@ -1,5 +1,6 @@
     # At Class    
-from models import ChessPiece, game_board
+from ChessPiece import ChessPiece
+from GameBoard import game_board
 
 
 class Knight(ChessPiece):

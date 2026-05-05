@@ -25,7 +25,7 @@ class get_possible_moves_response(response):
 
 class start_game_response(response):
     def __init__(self, URL, sender, white,black):
-        super.__init__(URL, sender)
+        super().__init__(URL, sender)
 
         self.white = white
         self.black = black

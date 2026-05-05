@@ -1,7 +1,8 @@
     
 
     # Fil Class
-from models import ChessPiece, game_board
+from ChessPiece import ChessPiece
+from GameBoard import game_board
 
 class Bishop(ChessPiece):
     def __init__(self, color, position):

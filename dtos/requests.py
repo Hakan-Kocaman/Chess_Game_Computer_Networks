@@ -1,7 +1,7 @@
 from abc import ABC
 
 class request(ABC):
-    def __init__(self, URL, sender, body):
+    def __init__(self, URL, sender):
         self.URL = URL
         self.sender = sender
 

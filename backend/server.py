@@ -40,7 +40,7 @@ def handle_player_connection(new_player):
             logger.info("Two players connected. Starting the game.")
     
     try:
-        controller_thread = threading.Thread(target=gateway.handle_client, args=(new_player.socket))
+        controller_thread = threading.Thread(target=gateway.handle_client, args=(new_player.socket,))
         controller_thread.start()
     except Exception as e:
         logger.error(f"Error starting controller thread for {new_player.get_name()}: {e}")
