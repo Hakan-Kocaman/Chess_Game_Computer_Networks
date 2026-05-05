@@ -23,9 +23,13 @@
       <property name="frameShadow">
        <enum>QFrame::Shadow::Raised</enum>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="5,2">
        <item>
-        <layout class="QGridLayout" name="gridLayout_4"/>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+        </layout>
        </item>
        <item>
         <widget class="QFrame" name="frame_2">
@@ -35,7 +39,7 @@
          <property name="frameShadow">
           <enum>QFrame::Shadow::Raised</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
+         <layout class="QVBoxLayout" name="verticalLayout" stretch="1,4">
           <item>
            <widget class="QFrame" name="frame_3">
             <property name="frameShape">
@@ -54,6 +58,25 @@
             <property name="frameShadow">
              <enum>QFrame::Shadow::Raised</enum>
             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,1,1">
+             <item>
+              <widget class="QTextEdit" name="textEdit">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEdit"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton">
+               <property name="text">
+                <string>PushButton</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>

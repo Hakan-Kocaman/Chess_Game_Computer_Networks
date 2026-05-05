@@ -4,7 +4,7 @@ import gateway as gateway
 from player import player, player_list
 import socket_manager
 from logger import logger
-from GameBoard import GameBoard
+
 
 
 def start_server():
@@ -20,13 +20,23 @@ def start_server():
         
 
 def handle_player_connection(new_player):
+    starting_board = [
+    ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"], # Siyah taşlar
+    ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
+    ["·", "·", "·", "·", "·", "·", "·", "·"], # Boş kareler
+    ["·", "·", "·", "·", "·", "·", "·", "·"],
+    ["·", "·", "·", "·", "·", "·", "·", "·"],
+    ["·", "·", "·", "·", "·", "·", "·", "·"],
+    ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"], # Beyaz taşlar
+    ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"]
+    ]
     global current_turn
 
     initial_packet = {
         "type": "game_start", 
         "player": new_player,
         "message": f"Joined as {new_player.get_name()}",
-        "game_board": GameBoard.starting_board
+        "game_board": starting_board                            #Hosgeldin paketine baslangic tahtasi eklendi
 
     }
     handshake = pickle.dumps(initial_packet)
