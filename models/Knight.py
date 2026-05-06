@@ -29,17 +29,6 @@ class Knight(ChessPiece):
                  else:
                     break  # kendi taşı, dur
         return self.possible_moves
-    
-    def move(self, new_position):
-        if self.possible_moves == None:
-            self.possible_moves = self.get_possible_moves()
-       
-        if new_position in self.possible_moves:
-            if game_board[new_position[0]][new_position[1]] is not None:
-                # Taş yeniyor, tahtadan kaldır
-                game_board[new_position[0]][new_position[1]].die()
-            self.position = new_position
-            self.possible_moves = None  # Hamle yapıldı, olası hamleler sıfırlandı
 
     def die(self):
         self = None  # Taş öldü, referansı kaldır

@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from models.ChessPiece import game_board
+from models.GameBoard import game_board
 from player import player_list
 from logger import logger
 import pickle
@@ -19,7 +19,7 @@ def chat_service(request):
     response = chat_response(
                 URL=request.URL,
                 sender=request.sender,
-                message=request.body
+                message=request.message
             )
     
     broadcast(response, reciever_list)
@@ -32,7 +32,7 @@ def get_possible_moves_service(request):
             reciever_list.append(player.socket)
             break
 
-    selected_piece = request.body.selected_piece
+    selected_piece = request.selected_piece
     selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]] 
     
     possible_moves = selected_piece.get_possible_moves()
@@ -46,13 +46,16 @@ def get_possible_moves_service(request):
 
 
 def move_service(request):
-
     reciever_list = []
     for player in player_list:
         reciever_list.append(player.socket)
 
-    selected_piece = request.body.get("selected_piece")
+    selected_piece = request.selected_piece
     selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]]
+
+    
+    if request.sender != request.selected_piece.color:
+        return
     
     response = move_response(
         URL=request.URL,
@@ -60,6 +63,12 @@ def move_service(request):
         move_result= selected_piece.move(request.new_position)
     )
     broadcast(response, reciever_list)
+
+    if response.move_result.startswith("checkmate"):
+        finish_game_service(request.sender, "black" if request.sender == "white" else "white" ,response.move_result)
+        return
+
+    turn_change_service("black" if request.sender == "white" else "white")
 
 
 def start_game_service():
