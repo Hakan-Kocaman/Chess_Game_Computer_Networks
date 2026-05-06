@@ -5,6 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from models.GameBoard import game_board
 from player import player_list
+from server import current_turn
 from logger import logger
 import pickle
 from dtos.responses import move_response, get_possible_moves_response, chat_response, start_game_response, turn_change_response, finish_game_response
@@ -53,7 +54,9 @@ def move_service(request):
     selected_piece = request.selected_piece
     selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]]
 
-    
+    if request.sender != current_turn:
+        return
+
     if request.sender != request.selected_piece.color:
         return
     

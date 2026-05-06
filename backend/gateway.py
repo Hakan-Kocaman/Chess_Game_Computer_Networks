@@ -23,15 +23,15 @@ controller_list = {
 def controller_handler(client_socket, request):
     if client_socket:
         try:
-            requested_controller = controller_list.get(request['URL'])
+            requested_controller = controller_list.get(request.URL)
             if requested_controller:
-                logger.info(f"Received request for {request['URL']} from {request['sender']}")
+                logger.info(f"Received request for {request.URL} from {request.sender}")
                 response = requested_controller(request)    
                 if response != {"success": True}:
-                    logger.error(f"Controller {request['URL']} did not return a response for request from {request['sender']}")    
+                    logger.error(f"Controller {request.URL} did not return a response for request from {request.sender}. Response: {response}")    
             else:
                 client_socket.send(pickle.dumps({"error": "unknown service"}))
-                logger.error(f"Unknown service requested from {request['sender']}: {request['URL']}")
+                logger.error(f"Unknown service requested from {request.sender}: {request.URL}")
         except Exception as e:
                 logger.error(f"Error receiving data from client: {e}")
 

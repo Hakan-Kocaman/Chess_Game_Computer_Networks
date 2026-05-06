@@ -17,8 +17,8 @@ class ChessPiece(ABC):
         if new_position in possible_moves:
             if game_board[new_position[0]][new_position[1]] is not None:
                 # Taş yeniyor, tahtadan kaldır
-                game_board[new_position[0]][new_position[1]].die()
                 move_result = "capture "+game_board[new_position[0]][new_position[1]].color+ " "+game_board[new_position[0]][new_position[1]].__class__.__name__
+                game_board[new_position[0]][new_position[1]].die()
             self.position = new_position
             
         for chesspiece in game_board:
