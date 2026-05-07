@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from models.GameBoard import game_board
 from player import player_list
-from server import current_turn
+from global_variables import current_turn
 from logger import logger
 import pickle
 from dtos.responses import move_response, get_possible_moves_response, chat_response, start_game_response, turn_change_response, finish_game_response

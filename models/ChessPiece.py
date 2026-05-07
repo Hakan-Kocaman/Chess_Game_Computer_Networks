@@ -21,16 +21,15 @@ class ChessPiece(ABC):
                 game_board[new_position[0]][new_position[1]].die()
             self.position = new_position
             
-        for chesspiece in game_board:
-            if isinstance(chesspiece, King) and chesspiece.color != self.color:
+        for row in game_board:
+            for chesspiece in row:
+                if isinstance(chesspiece, King) and chesspiece.color != self.color:
 
-                if chesspiece.position in possible_moves: # şah kontrolü
-                    move_result = "check "+chesspiece.color 
+                    if chesspiece.position in possible_moves: # şah kontrolü
+                        move_result = "check "+chesspiece.color 
 
-                if chesspiece.get_possible_moves() == []: # mat kontrolü
-                    move_result = "checkmate "+chesspiece.color 
-        
-        self.possible_moves = None  # Hamle yapıldı, olası hamleler sıfırlandı
+                    if chesspiece.get_possible_moves() == []: # mat kontrolü
+                        move_result = "checkmate "+chesspiece.color 
 
         return move_result
 
