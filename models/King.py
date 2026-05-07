@@ -51,6 +51,8 @@ class King(ChessPiece):
                 ny = target_position[1] + dy * step
                 if 0 <= nx < 8 and 0 <= ny < 8:
                     target = game_board[nx][ny]
+                    if target is not None and target.color == self.color:# aynı renk taş
+                        break
                     if step==1:
                         if target is not None and target.color != self.color and isinstance(target, King):
                             return True
@@ -64,6 +66,8 @@ class King(ChessPiece):
                 ny = target_position[1] + dy * step
                 if 0 <= nx < 8 and 0 <= ny < 8:
                     target = game_board[nx][ny]
+                    if target is not None and target.color == self.color:# aynı renk taş
+                        break
                     if step==1:
                         if target is not None and target.color != self.color and (isinstance(target, King) or isinstance(target, Pawn)):
                             return True
@@ -78,6 +82,8 @@ class King(ChessPiece):
                 if 0 <= nx < 8 and 0 <= ny < 8:
 
                     target = game_board[nx][ny]
+                    if target is not None and target.color == self.color:# aynı renk taş
+                        break
                     if target is not None and target.color != self.color and isinstance(target, Knight):
                          return True
         
