@@ -8,7 +8,7 @@ from logger import logger
 
 # request= {
 #     "URL": determines the service,
-#     "from": player color, 
+#     "sender": sender of the request,
 #     .....
 # }
 
@@ -20,15 +20,15 @@ controller_list = {
    "move": controllers.move_controller
 }
 
-def controller_handler(client_socket, addr, request):
+def controller_handler(client_socket, request):
     if client_socket:
         try:
             requested_controller = controller_list.get(request.URL)
             if requested_controller:
                 logger.info(f"Received request for {request.URL} from {request.sender}")
-                response = requested_controller(request) 
-                if not response:
-                    logger.error(f"Controller {request.URL} did not return a response for request from {request.sender}")    
+                response = requested_controller(request)    
+                if response != {"success": True}:
+                    logger.error(f"Controller {request.URL} did not return a response for request from {request.sender}. Response: {response}")    
             else:
                 client_socket.send(pickle.dumps({"error": "unknown service"}))
                 logger.error(f"Unknown service requested from {request.sender}: {request.URL}")
@@ -37,13 +37,9 @@ def controller_handler(client_socket, addr, request):
 
 def handle_client(client_socket):
     while True:
-        data = client_socket.recv(1024)
+        data = client_socket.recv(4096)
         request = pickle.loads(data)
-        request = request(
-            URL=request.get("URL"),
-            sender=request.get("from"),
-            body=request.get("body")
-        )
+
         controller_thread=threading.Thread(target=controller_handler, args=(client_socket, request))
         controller_thread.start()
 

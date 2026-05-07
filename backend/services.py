@@ -3,10 +3,12 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from models.ChessPiece import game_board
+from models.GameBoard import game_board
 from player import player_list
-from dtos.responses import move_response_body, chat_response_body, get_possible_moves_response_body
-from dtos.responses import response as response_dto
+import global_variables
+from logger import logger
+import pickle
+from dtos.responses import move_response, get_possible_moves_response, chat_response, start_game_response, turn_change_response, finish_game_response
 
 def chat_service(request):
     reciever_list = []
@@ -15,16 +17,13 @@ def chat_service(request):
         if player.color != request.sender:
             reciever_list.append(player.socket)
     
-    response = response_dto(
+    response = chat_response(
                 URL=request.URL,
                 sender=request.sender,
-                reciever_list=reciever_list,
-                body=chat_response_body(
-                    message=request.body.message
-                    )
+                message=request.message
             )
-    return response
-
+    
+    broadcast(response, reciever_list)
                 
 def get_possible_moves_service(request):
 
@@ -34,41 +33,96 @@ def get_possible_moves_service(request):
             reciever_list.append(player.socket)
             break
 
-    selected_piece = request.body.selected_piece
+    selected_piece = request.selected_piece
     selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]] 
     
     possible_moves = selected_piece.get_possible_moves()
 
-    response = response_dto(
+    response = get_possible_moves_response(
         URL=request.URL,
         sender=request.sender,
-        reciever_list=reciever_list,
-        body=get_possible_moves_response_body(
-            possible_moves=possible_moves
-            )
+        possible_moves=possible_moves
     )
-    return response
+    broadcast(response, reciever_list)
+
 
 def move_service(request):
-
 
     reciever_list = []
     for player in player_list:
         reciever_list.append(player.socket)
 
-    selected_piece = request.body.get("selected_piece")
-    selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]] 
+    selected_piece = request.selected_piece
+    selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]]
+
+    if request.sender != global_variables.current_turn:
+        return
+
+    if request.sender != request.selected_piece.color:
+        return
     
-    response = response_dto(
+    response = move_response(
         URL=request.URL,
         sender=request.sender,
-        reciever_list=reciever_list,
-        body=move_response_body(
-            move_result=selected_piece.move(request.body.new_position))
-            )
-    
-    return response
+        move_result= selected_piece.move(request.new_position)
+    )
+    broadcast(response, reciever_list)
 
-                
- 
+    if response.move_result.startswith("checkmate"):
+        finish_game_service(request.sender, "black" if request.sender == "white" else "white" ,response.move_result)
+        return
+
+    turn_change_service()
+
+def start_game_service():
+    reciever_list = []
+    for player in player_list:
+        if player.color in ["white"]:
+            white_player = player
+        elif player.color in ["black"]:
+            black_player = player
+        reciever_list.append(player.socket)
+
+    response = start_game_response( 
+        URL="start_game",
+        sender="server",
+        white=white_player,
+        black=black_player
+    )
+    broadcast(response, reciever_list)
+
+
+def turn_change_service():
+    reciever_list = []
+    for player in player_list:
+        reciever_list.append(player.socket)
+
+    global_variables.current_turn = "white" if current_turn == "black" else "black"
+
+    response = turn_change_response(
+        URL="turn_change",
+        sender="server",
+        current_turn=global_variables.current_turn
+    )
+    broadcast(response, reciever_list)
+
+def finish_game_service(winner,loser,result):
+    reciever_list = []
+    for player in player_list:
+        reciever_list.append(player.socket)
     
+    response = finish_game_response(
+        URL="finish_game",
+        sender="server",
+        winner=winner,
+        loser=loser,
+        result=result
+    )
+    broadcast(response, reciever_list)
+
+
+def broadcast(response, reciever_list):
+    logger.info(f"Broadcasting response for {response.URL} to {len(reciever_list)} clients.")
+    if reciever_list:
+        for socket in reciever_list:
+            socket.send(pickle.dumps(response))

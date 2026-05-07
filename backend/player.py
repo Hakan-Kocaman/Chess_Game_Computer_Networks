@@ -12,12 +12,12 @@ class player:
         self.color = self.determine_color()
 
     def determine_color(self):
-        if len(player_list) < 2:
-            return None
-        if player_list.clear():
+        if len(player_list) >= 2:
+            return "watcher"
+        if len(player_list) == 0:
             return random.choice(colors)
         else: 
-            return "black" if "white" in player_list.values() else "white"
+            return "black" if any(p.color == "white" for p in player_list) else "white"
 
     def get_name(self):
         return "Player " + str(self.id) + " (" + self.color + ")"
