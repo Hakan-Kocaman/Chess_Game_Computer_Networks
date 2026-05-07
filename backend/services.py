@@ -97,7 +97,7 @@ def turn_change_service():
     for player in player_list:
         reciever_list.append(player.socket)
 
-    global_variables.current_turn = "white" if current_turn == "black" else "black"
+    global_variables.current_turn = "white" if global_variables.current_turn == "black" else "black"
 
     response = turn_change_response(
         URL="turn_change",

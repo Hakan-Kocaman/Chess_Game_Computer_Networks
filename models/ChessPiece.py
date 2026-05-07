@@ -24,15 +24,17 @@ class ChessPiece(ABC):
             self.position = new_position
             game_board[self.position[0]][self.position[1]] = self
             
+            possible_moves = self.get_possible_moves()
+
             for row in game_board:
                 for chesspiece in row:
                     if isinstance(chesspiece, King) and chesspiece.color != self.color:
 
                         if chesspiece.position in possible_moves: # şah kontrolü
-                            move_result = "check "+chesspiece.color 
-
-                        if chesspiece.get_possible_moves() == []: # mat kontrolü
-                            move_result = "checkmate "+chesspiece.color 
+                            move_result = "check "+chesspiece.color
+                            if chesspiece.get_possible_moves() == []: # mat kontrolü
+                                move_result = "checkmate "+chesspiece.color 
+                        break
         # cases
         # move_result = "unsuccessful move"
         # move_result = "move"
