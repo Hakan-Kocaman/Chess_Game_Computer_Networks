@@ -20,21 +20,25 @@ class ChessPiece(ABC):
                 # Taş yeniyor, tahtadan kaldır
                 move_result = "capture "+game_board[new_position[0]][new_position[1]].color+ " "+game_board[new_position[0]][new_position[1]].__class__.__name__
                 game_board[new_position[0]][new_position[1]].die()
-
+                
+            game_board[self.position[0]][self.position[1]] = None
             self.position = new_position
             game_board[self.position[0]][self.position[1]] = self
             
             possible_moves = self.get_possible_moves()
 
+            found_king = False
             for row in game_board:
                 for chesspiece in row:
                     if isinstance(chesspiece, King) and chesspiece.color != self.color:
-
+                        found_king=True
                         if chesspiece.position in possible_moves: # şah kontrolü
                             move_result = "check "+chesspiece.color
                             if chesspiece.get_possible_moves() == []: # mat kontrolü
                                 move_result = "checkmate "+chesspiece.color 
                         break
+                if found_king:
+                    break
         # cases
         # move_result = "unsuccessful move"
         # move_result = "move"
