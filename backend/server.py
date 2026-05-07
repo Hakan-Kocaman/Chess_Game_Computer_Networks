@@ -1,6 +1,6 @@
 import threading
 import pickle
-from backend.services import start_game_service
+from services import start_game_service
 import gateway as gateway
 from player import player, player_list
 import socket_manager

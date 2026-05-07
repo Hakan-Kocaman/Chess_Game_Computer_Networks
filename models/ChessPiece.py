@@ -19,7 +19,9 @@ class ChessPiece(ABC):
                 # Taş yeniyor, tahtadan kaldır
                 move_result = "capture "+game_board[new_position[0]][new_position[1]].color+ " "+game_board[new_position[0]][new_position[1]].__class__.__name__
                 game_board[new_position[0]][new_position[1]].die()
+
             self.position = new_position
+            game_board[self.position[0]][self.position[1]] = self
             
         for row in game_board:
             for chesspiece in row:

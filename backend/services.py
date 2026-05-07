@@ -47,6 +47,8 @@ def get_possible_moves_service(request):
 
 
 def move_service(request):
+    global current_turn
+    
     reciever_list = []
     for player in player_list:
         reciever_list.append(player.socket)
@@ -71,8 +73,7 @@ def move_service(request):
         finish_game_service(request.sender, "black" if request.sender == "white" else "white" ,response.move_result)
         return
 
-    turn_change_service("black" if request.sender == "white" else "white")
-
+    turn_change_service()
 
 def start_game_service():
     reciever_list = []
@@ -92,10 +93,13 @@ def start_game_service():
     broadcast(response, reciever_list)
 
 
-def turn_change_service(current_turn):
+def turn_change_service():
     reciever_list = []
     for player in player_list:
         reciever_list.append(player.socket)
+
+    global current_turn
+    current_turn = "white" if current_turn == "black" else "black"
 
     response = turn_change_response(
         URL="turn_change",
