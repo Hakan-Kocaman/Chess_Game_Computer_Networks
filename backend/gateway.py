@@ -2,7 +2,6 @@ import threading
 import pickle
 import socket_manager
 import controllers
-from dtos.requests import request
 from logger import logger
 
 

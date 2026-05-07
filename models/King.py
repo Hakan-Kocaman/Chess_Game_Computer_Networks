@@ -58,6 +58,8 @@ class King(ChessPiece):
                             return True
                     if target is not None and target.color != self.color and (isinstance(target, Queen) or isinstance(target, Rook)):
                          return True
+                    elif target is not None:
+                        break
                     
         diagonal_threats =[(1,1), (1,-1), (-1,1), (-1,-1)]
         for dx, dy in diagonal_threats:
@@ -73,10 +75,12 @@ class King(ChessPiece):
                             return True
                     if target is not None and target.color != self.color and (isinstance(target, Queen) or isinstance(target, Bishop)):
                          return True
+                    elif target is not None:
+                        break
                     
         L_shaped_threats = [(2,1),(1,2),(-1,2),(-2,1),(-2,-1),(-1,-2),(1,-2),(2,-1)]
         for dx, dy in L_shaped_threats:
-            for step in range(1):
+            for step in range(1,2):
                 nx = target_position[0] + dx * step
                 ny = target_position[1] + dy * step
                 if 0 <= nx < 8 and 0 <= ny < 8:
