@@ -2,6 +2,13 @@
     # Şah Class
 from ChessPiece import ChessPiece
 from GameBoard import game_board
+from Queen import Queen
+from Bishop import Bishop
+from Rook import Rook
+from Knight import Knight
+from Pawn import Pawn
+
+
 
 
 class King(ChessPiece):
@@ -18,7 +25,10 @@ class King(ChessPiece):
             
                 if not (0 <= nx < 8 and 0 <= ny < 8):
                     break  # tahtadan çıktı
-            
+
+                if self.is_threatened((nx, ny)):
+                    break
+
                 target = game_board[nx][ny]
             
                 if target is None:
@@ -31,6 +41,47 @@ class King(ChessPiece):
                 else:
                     break  # kendi taşı, dur
         return self.possible_moves
+    def is_threatened(self, target_position):
+        result=False
 
+        linear_threats =[(0,1), (1,0), (0,-1), (-1,0)]
+        for dx, dy in linear_threats:
+            for step in range(1,8):
+                nx = target_position[0] + dx * step
+                ny = target_position[1] + dy * step
+                if 0 <= nx < 8 and 0 <= ny < 8:
+                    target = game_board[nx][ny]
+                    if step==1:
+                        if target is not None and target.color != self.color and isinstance(target, King):
+                            return True
+                    if target is not None and target.color != self.color and (isinstance(target, Queen) or isinstance(target, Rook)):
+                         return True
+                    
+        diagonal_threats =[(1,1), (1,-1), (-1,1), (-1,-1)]
+        for dx, dy in diagonal_threats:
+            for step in range(1,8):
+                nx = target_position[0] + dx * step
+                ny = target_position[1] + dy * step
+                if 0 <= nx < 8 and 0 <= ny < 8:
+                    target = game_board[nx][ny]
+                    if step==1:
+                        if target is not None and target.color != self.color and (isinstance(target, King) or isinstance(target, Pawn)):
+                            return True
+                    if target is not None and target.color != self.color and (isinstance(target, Queen) or isinstance(target, Bishop)):
+                         return True
+                    
+        L_shaped_threats = [(2,1),(1,2),(-1,2),(-2,1),(-2,-1),(-1,-2),(1,-2),(2,-1)]
+        for dx, dy in L_shaped_threats:
+            for step in range(1):
+                nx = target_position[0] + dx * step
+                ny = target_position[1] + dy * step
+                if 0 <= nx < 8 and 0 <= ny < 8:
+
+                    target = game_board[nx][ny]
+                    if target is not None and target.color != self.color and isinstance(target, Knight):
+                         return True
+        
+        return False
     def die(self):
-        self = None  # Taş öldü, referansı kaldır
+        pass
+

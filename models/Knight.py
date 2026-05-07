@@ -29,6 +29,3 @@ class Knight(ChessPiece):
                  else:
                     break  # kendi taşı, dur
         return self.possible_moves
-
-    def die(self):
-        self = None  # Taş öldü, referansı kaldır

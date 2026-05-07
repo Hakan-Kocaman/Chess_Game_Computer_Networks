@@ -6,7 +6,7 @@ from player import player, player_list
 import socket_manager
 from logger import logger
 from models.GameBoard import game_board
-from global_variables import current_turn, game_state, game_states
+import global_variables
 
 
 
@@ -22,22 +22,21 @@ def start_server():
         
 
 def handle_player_connection(new_player):
-    global current_turn, game_state, game_states
 
     initial_packet = {
         "URL": "initial",
         "sender": "server",
         "player": new_player,
         "board": game_board,
-        "state": game_state,
+        "state": global_variables.game_state,
         "message": f"Joined as {new_player.get_name()}"
     }
     handshake = pickle.dumps(initial_packet)
     new_player.socket.send(handshake) 
 
-    if len(player_list) > 1 and game_state != game_states[1]:  
+    if len(player_list) > 1 and global_variables.game_state != global_variables.game_states[1]:  
         start_game_service()
-        game_state = game_states[1] 
+        global_variables.game_state = global_variables.game_states[1] 
         logger.info("Two players connected. Starting the game.")
     
     try:

@@ -27,5 +27,3 @@ class Rook(ChessPiece):
                     break  # kendi taşı, dur
         return self.possible_moves
 
-    def die(self):
-        self = None  # Taş öldü, referansı kaldır

@@ -41,5 +41,3 @@ class Pawn(ChessPiece):
 
         return self.possible_moves
 
-    def die(self):
-        self = None  # Taş öldü, referansı kaldır
