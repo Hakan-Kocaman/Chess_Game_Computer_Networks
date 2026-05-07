@@ -1,6 +1,6 @@
 import os
 import sys
-from PySide6.QtWidgets import QApplication, QMessageBox, QPushButton
+from PySide6.QtWidgets import QApplication, QLineEdit, QMessageBox, QPushButton
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Signal, QObject
@@ -11,13 +11,14 @@ from PySide6.QtCore import Signal, QObject
 
 class Frame(QObject):
     ## Signal slot mantigi ui da yapilan hamlenin soket ile servera gonderilebilmesi icin
-    move_signal = Signal(str, int, str, int)
-    possible_moves_signal = Signal(str, int)
+    move_signal = Signal(int, int, int, int)
+    possible_moves_signal = Signal(int, int)
+    chat_signal=Signal(str)
 
 
 
     def __init__(self):
-        
+        super().__init__()
 
         loader = QUiLoader()
         ui_path = os.path.join(os.path.dirname(__file__), "main.ui")
@@ -28,10 +29,12 @@ class Frame(QObject):
         self.myturn=False
         self.selected_button=None
 
+        self.starter_board=[]
+
         self.buttons=[]
         self.playedbuttons=[]
         self.last_higlighted_buttons=[]
-        row_dict = {
+        self.row_dict = {
             0: "a",
             1: "b",
             2: "c",
@@ -65,14 +68,27 @@ class Frame(QObject):
         }
         self.window.gridLayout_4.setSpacing(0)
         self.window.gridLayout_4.setContentsMargins(0, 0, 0, 0)
-        for i in range(8):
+
+        self.chat_button=QPushButton("")
+        self.chat_button=self.window.pushButton
+        self.chat_button.clicked.connect(self.chat_on_click)
+
+        self.line_edit=QLineEdit("")
+        self.line_edit=self.window.lineEdit
+
+       
+        
+    def create_buttons(self,my_color):
+         self.my_color=my_color
+         for i in range(8):
             row=[]
             for j in range(8):
-                btn=QPushButton(f"button{row_dict.get(j)}{i+1}")
+                btn=QPushButton("")
                 btn.setFixedSize(60,60)
                 btn.setIconSize(btn.size())
                 btn.setProperty("x",i)
                 btn.setProperty("y",j)
+                btn.setProperty("notation",f"{self.row_dict.get(j)}{8 - i}")
                 
                 btn.setText("")                                                 #Isimleri kaldir
                 if (i + j) % 2 == 0:
@@ -82,18 +98,21 @@ class Frame(QObject):
 
                 btn.clicked.connect(self.on_click)
                 if self.my_color == "white":
-                    self.window.gridLayout_4.addWidget(btn, 7 - i, j)
-                else:
                     self.window.gridLayout_4.addWidget(btn, i, j)
+                else:
+                    self.window.gridLayout_4.addWidget(btn, 7 -i, 7 -j)
                 row.append(btn)
             self.buttons.append(row)
 
+   
+        
         
 
 
     def on_click(self):
         clicked=self.sender()
         piece=clicked.property("piece")
+        print(clicked.property("notation"))
         
         #Bos kareye tiklandiysa veya sira bu clientte degilse gec
         if piece=="." or piece==None and self.myturn==False:
@@ -107,7 +126,7 @@ class Frame(QObject):
             
             self.selected_button=clicked
             clicked.setStyleSheet("background-color: #f6f669; border: none;")
-            self.get_request_possible_moves()       ################################################################
+            self.get_request_possible_moves(self.selected_button)       ################################################################
         #2. tiklama
         else:
             #2. tiklama ayni butona tiklandiysa secimi iptal et
@@ -162,9 +181,10 @@ class Frame(QObject):
             )
     def clear_highlights(self):
         for (x, y) in self.last_higlighted_buttons:
-            self.buttons[x][y].setStyleSheet(
-                "background-color: #769656; border: none;"
-            )
+            if (x + y) % 2 == 0:
+                self.buttons[x][y].setStyleSheet("background-color: #eeeed2; border: none;")
+            else:
+                self.buttons[x][y].setStyleSheet("background-color: #769656; border: none;")
 
     
 
@@ -182,22 +202,26 @@ class Frame(QObject):
                 button=self.buttons[i][j]
                 button.setProperty("piece",server_game_board[i][j])
                 if server_game_board[i][j] in self.piece_icons:
-                    button.setIcon(QIcon(self.piece_icons[server_game_board[i][j]]))
+                    if self.piece_icons[server_game_board[i][j]] !=None:
+                        button.setIcon(QIcon(self.piece_icons[server_game_board[i][j]]))
+                    else:
+                        button.setIcon(QIcon())
                 else:
                     button.setIcon(QIcon())
+        print(f"color:{self.my_color}")
 
-    def update_board(self):
-        oldx=int
-        oldy=int
-        newx=int
-        newy=int
+    def update_board(self,str):
+        oldx=int()
+        oldy=int()
+        newx=int()
+        newy=int()
         self.playedbuttons[0]=oldx
         self.playedbuttons[1]=oldy
         self.playedbuttons[2]=newx
         self.playedbuttons[3]=newy
         
-        if (oldx==-1 or oldy==-1 or newx ==-1 or newy ==-1) and self.myturn:
-            QMessageBox.warning(self, "Unsuccesfull move", "Unsuccesfull move")
+        if (str=="fail") and self.myturn:
+            QMessageBox.warning(self.window, "Unsuccesfull move", "Unsuccesfull move")
 
 
         
@@ -214,19 +238,19 @@ class Frame(QObject):
         ##BURAYA GERIYE HAMLENIN NOTASYONU DONDURULEBILIR
 
     def update_board_with_check(self,str):
-        oldx=int
-        oldy=int
-        newx=int
-        newy=int
+        oldx=int()
+        oldy=int()
+        newx=int()
+        newy=int()
         self.playedbuttons[0]=oldx
         self.playedbuttons[1]=oldy
         self.playedbuttons[2]=newx
         self.playedbuttons[3]=newy
 
         if self.myturn==False and str=="check":
-            QMessageBox.warning(self, "Check", "You have been checked")
+            QMessageBox.warning(self.window, "Check", "You have been checked")
         if self.myturn==False and str=="checkmate":
-            QMessageBox.warning(self, "Checkmate", "Game over")
+            QMessageBox.warning(self.window, "Checkmate", "Game over")
         oldbutton=self.buttons[oldx][oldy]
         newbutton=self.buttons[newx][newy]
 
@@ -234,5 +258,16 @@ class Frame(QObject):
         oldbutton.setProperty("piece",None)
         self.buttons[oldx][oldy].setIcon(QIcon())
         self.buttons[newx][newy].setIcon(self.piece_icons[newbutton.property("piece")])
+
+
+
+
+
+
+    def chat_on_click(self):
+        message=self.line_edit.text().strip()
+        if message!="":
+            self.chat_signal(message)
+
 
 

@@ -35,6 +35,8 @@ class Connect:
         self.button=QPushButton()
         self.button=self.window.pushButton
         self.button.clicked.connect(self.connect_pressed)
+        self.my_color=None
+        self.myturn={"myturn":None}
         self.username = ""
         self.server_ip = ""
         self.stack.setCurrentIndex(0)
@@ -76,22 +78,22 @@ class Connect:
                             
                 
                 
-                #Serverdan onay cevabi bekleniyor
+                #Serverdan onay (initial packet) cevabi bekleniyor
                 received_pickle=self.socket.recv(1024)
                 server_response=pickle.loads(received_pickle)
-                if server_response["type"] == "game_start":
+                if server_response["URL"] == "initial":
                     print("[CLIENT] Erişim onaylandi! Tahtaya geçiliyor...")
                     self.stack.setCurrentIndex(1)
-
+                    self.my_color=server_response["player"]
                     starter_game_board=server_response["game_board"]
-                    self.play_screen.my_color=server_response["color"]
-                    self.play_screen.myturn=server_response["your_turn"]
                     
+                    self.play_screen.create_buttons(self.my_color)
 
                     self.play_screen.load_board(starter_game_board)
 
                     self.play_screen.move_signal.connect(self.send_move)
                     self.play_screen.possible_moves_signal.connect(self.send_possible_moves_request)
+                    self.play_screen.chat_signal.connect(self.send_chat)
 
 
 
@@ -165,6 +167,7 @@ class messagethread(QThread):
         super().__init__()
         self.socket = socket
         self.my_username=username
+        
 
     
     
@@ -175,9 +178,9 @@ class messagethread(QThread):
                 received_packet=pickle.loads(received_pickle)
                 if received_packet.URL=="move":
                         if received_packet.move_result=="move":
-                            self.move_received.emit()
+                            self.move_received.emit("succesfull")
                         if received_packet.move_result=="unsuccessful move":
-                            self.move_received.emit(-1,-1,-1,-1)
+                            self.move_received.emit("fail")
                         if received_packet.move_result=="capture":
                             self.move_received.emit()
                         if received_packet.move_result=="check":
@@ -199,6 +202,8 @@ class messagethread(QThread):
 
                 elif received_packet.URL=="chat":
                     self.chat_received.emit(received_packet.sender,received_packet.message)
+                
+                
                     
 
             except:

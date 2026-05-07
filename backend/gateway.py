@@ -3,6 +3,7 @@ import pickle
 import socket_manager
 import controllers
 from logger import logger
+from dtos.requests import move_request,chat_request,get_possible_moves_request
 
 
 # request= {
