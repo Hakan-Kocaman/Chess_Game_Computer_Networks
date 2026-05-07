@@ -1,10 +1,10 @@
 
-from models.Bishop import Bishop
-from models.King import King
-from models.Knight import Knight
-from models.Pawn import Pawn
-from models.Queen import Queen
-from models.Rook import Rook
+from Bishop import Bishop
+from King import King
+from Knight import Knight
+from Pawn import Pawn
+from Queen import Queen
+from Rook import Rook
 
 
 class GameBoard:
