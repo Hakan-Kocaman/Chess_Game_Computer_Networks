@@ -7,7 +7,8 @@ import socket
 
 from PySide6.QtCore import QThread, Signal
 from frame import Frame
-from requests import move_request
+from requests import move_request,chat_request,get_possible_moves_request
+
 
 import pickle
 
@@ -73,16 +74,7 @@ class Connect:
                 print(f"[CLIENT] Servera baglanildi {server_ip}:{server_port}") 
                 print() 
                             
-                #ilk paket hazirlanip gonderiliyor
-                connection_packet=move_request(
-                    URL="/login",
-                    sender=self.username,
-                    selected_piece=None,
-                    new_position=None
-                    )
-                pickled_packet=pickle.dumps(connection_packet)
-                self.socket.send(pickled_packet)
-                print(f"[CLIENT] Login isteği gönderildi: Oyuncu -> {self.username}")
+                
                 
                 #Serverdan onay cevabi bekleniyor
                 received_pickle=self.socket.recv(1024)
@@ -109,6 +101,7 @@ class Connect:
                     self.msg_thread.move_received.connect(self.play_screen.update_board)
                     self.msg_thread.turn_received.connect(self.play_screen.handle_turn)
                     self.msg_thread.chat_received.connect(self.play_screen.handle_chat)
+                    self.msg_thread.check_received.connect(self.play_screen.update_board_with_check)
                     self.msg_thread.start()
                                     ###############
 
@@ -138,19 +131,17 @@ class Connect:
         request=move_request(
             URL="move",
             sender=self.username,
-            selected_piece=from_x,
-            new_position=to_x
+            selected_piece=(from_x,from_y),
+            new_position=(to_x,to_y)
         )
         self.socket.sendall(pickle.dumps(request))
                 
     def send_possible_moves_request(self,from_x,from_y):
-        packet_body=get_possible_moves_request_body(selected_piece=(from_x,from_y))
-        packet=request(URL="get_possible_moves",sender=self.username,body=packet_body)
+        packet=get_possible_moves_request(URL="get_possible_moves",sender=self.username,selected_piece=(from_x,from_y))
         self.socket.sendall(pickle.dumps(packet))
 
     def send_chat(self,message_content):
-        packet_body=chat_request_body(message=message_content)
-        packet=request(URL="chat",sender=self.username,body=packet_body)
+        packet=chat_request(URL="chat",sender=self.username,message=message_content)
         self.socket.sendall(pickle.dumps(packet))
             
 
@@ -164,9 +155,10 @@ class Connect:
 
 class messagethread(QThread):
     possible_moves_received = Signal(list)
-    move_received = Signal(int,int,int,int)
+    move_received = Signal()
     turn_received=Signal(bool)
     chat_received=Signal(str,str)
+    check_received=Signal(str)
 
     
     def __init__(self, socket,username):
@@ -182,25 +174,31 @@ class messagethread(QThread):
                 received_pickle=self.socket.recv(1024)
                 received_packet=pickle.loads(received_pickle)
                 if received_packet.URL=="move":
-                        if received_packet.move_result:
-                            self.move_received.emit(received_packet.body.from_pos[0],
-                                                    received_packet.body.from_pos[1],
-                                                    received_packet.body.to_pos[0],
-                                                    received_packet.body.to_pos[1])
-                            
-                        # sender ben miyim?
-                        if received_packet.sender != self.my_username:
-                            # rakip oynadı, sıra bende
-                            self.turn_received.emit(True)
-                        else:
-                            # ben oynadım, sıra rakipte
-                            self.turn_received.emit(False)
+                        if received_packet.move_result=="move":
+                            self.move_received.emit()
+                        if received_packet.move_result=="unsuccessful move":
+                            self.move_received.emit(-1,-1,-1,-1)
+                        if received_packet.move_result=="capture":
+                            self.move_received.emit()
+                        if received_packet.move_result=="check":
+                            self.check_received.emit(received_packet.move_result)
+                        if received_packet.move_result=="checkmate":
+                            self.check_received.emit(received_packet.move_result)
+                        
+                        if received_packet.move_result!="unsuccessful move": 
+                            # sender ben miyim?
+                            if received_packet.sender != self.my_username:
+                                # rakip oynadı, sıra bende
+                                self.turn_received.emit(True)
+                            else:
+                                # ben oynadım, sıra rakipte
+                                self.turn_received.emit(False)
 
                 elif received_packet.URL=="get_possible_moves":
-                    self.possible_moves_received.emit(received_packet.body.possible_moves)
+                    self.possible_moves_received.emit(received_packet.possible_moves)
 
                 elif received_packet.URL=="chat":
-                    self.chat_received.emit(received_packet.sender,received_packet.body.message)
+                    self.chat_received.emit(received_packet.sender,received_packet.message)
                     
 
             except:

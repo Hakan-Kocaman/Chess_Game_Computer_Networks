@@ -1,6 +1,6 @@
 import os
 import sys
-from PySide6.QtWidgets import QApplication, QPushButton
+from PySide6.QtWidgets import QApplication, QMessageBox, QPushButton
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Signal, QObject
@@ -29,6 +29,7 @@ class Frame(QObject):
         self.selected_button=None
 
         self.buttons=[]
+        self.playedbuttons=[]
         self.last_higlighted_buttons=[]
         row_dict = {
             0: "a",
@@ -119,15 +120,16 @@ class Frame(QObject):
                     self.clear_highlights()
                     self.selected_button = clicked
                     clicked.setStyleSheet("background-color: #f6f669; border: none;")
-                    self.request_possible_moves(clicked)
+                    self.get_request_possible_moves(clicked)
                     return
                 if self.my_color == "black" and piece in ["♜","♞","♝","♛","♚","♟"]:
                     self.clear_highlights()
                     self.selected_button = clicked
                     clicked.setStyleSheet("background-color: #f6f669; border: none;")
-                    self.request_possible_moves(clicked)
+                    self.get_request_possible_moves(clicked)
                     return
                 #Tum kontrollerden sonra hamleyi servera gonder
+                
                 self.send_move(self.selected_button, clicked)
                 self.clear_highlights()
                 self.selected_button = None
@@ -139,13 +141,14 @@ class Frame(QObject):
         from_x=from_button.property("x")
         from_y=from_button.property("y")
         self.possible_moves_signal.emit(from_x,from_y)
-        pass
+        
 
     def send_move(self, from_button, to_button):
         from_x=from_button.property("x")
         from_y=from_button.property("y")
         to_x=to_button.property("x")
         to_y=to_button.property("y")
+        self.playedbuttons=[from_x,from_y,to_x,to_y]
         self.move_signal.emit(from_x,from_y,to_x,to_y)
 
 
@@ -183,7 +186,22 @@ class Frame(QObject):
                 else:
                     button.setIcon(QIcon())
 
-    def update_board(self,oldx,oldy,newx,newy):
+    def update_board(self):
+        oldx=int
+        oldy=int
+        newx=int
+        newy=int
+        self.playedbuttons[0]=oldx
+        self.playedbuttons[1]=oldy
+        self.playedbuttons[2]=newx
+        self.playedbuttons[3]=newy
+        
+        if (oldx==-1 or oldy==-1 or newx ==-1 or newy ==-1) and self.myturn:
+            QMessageBox.warning(self, "Unsuccesfull move", "Unsuccesfull move")
+
+
+        
+
         oldbutton=self.buttons[oldx][oldy]
         newbutton=self.buttons[newx][newy]
 
@@ -194,4 +212,27 @@ class Frame(QObject):
 
 
         ##BURAYA GERIYE HAMLENIN NOTASYONU DONDURULEBILIR
+
+    def update_board_with_check(self,str):
+        oldx=int
+        oldy=int
+        newx=int
+        newy=int
+        self.playedbuttons[0]=oldx
+        self.playedbuttons[1]=oldy
+        self.playedbuttons[2]=newx
+        self.playedbuttons[3]=newy
+
+        if self.myturn==False and str=="check":
+            QMessageBox.warning(self, "Check", "You have been checked")
+        if self.myturn==False and str=="checkmate":
+            QMessageBox.warning(self, "Checkmate", "Game over")
+        oldbutton=self.buttons[oldx][oldy]
+        newbutton=self.buttons[newx][newy]
+
+        newbutton.setProperty("piece", oldbutton.property("piece"))
+        oldbutton.setProperty("piece",None)
+        self.buttons[oldx][oldy].setIcon(QIcon())
+        self.buttons[newx][newy].setIcon(self.piece_icons[newbutton.property("piece")])
+
 

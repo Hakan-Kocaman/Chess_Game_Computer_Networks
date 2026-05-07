@@ -38,7 +38,7 @@ def handle_player_connection(new_player):
         "URL": "initial",
         "sender": "server",
         "player": new_player,
-        "game_board": starting_board                            #Hosgeldin paketine baslangic tahtasi eklendi
+        "game_board": starting_board,                      #Hosgeldin paketine baslangic tahtasi eklendi
         "state": global_variables.game_state,
         "message": f"Joined as {new_player.get_name()}"
     }
