@@ -1,6 +1,6 @@
 import socket
 
-HOST_IP = "0.0.0.0"
+HOST_IP = "127.0.0.1"
 HOST_PORT = 5050
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

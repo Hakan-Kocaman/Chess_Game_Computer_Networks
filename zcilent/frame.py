@@ -17,7 +17,7 @@ class Frame(QObject):
 
 
     def __init__(self):
-        self.app = QApplication(sys.argv)
+        
 
         loader = QUiLoader()
         ui_path = os.path.join(os.path.dirname(__file__), "main.ui")
@@ -29,6 +29,7 @@ class Frame(QObject):
         self.selected_button=None
 
         self.buttons=[]
+        self.last_higlighted_buttons=[]
         row_dict = {
             0: "a",
             1: "b",
@@ -61,19 +62,28 @@ class Frame(QObject):
         "·": None, 
         ".": None
         }
+        self.window.gridLayout_4.setSpacing(0)
+        self.window.gridLayout_4.setContentsMargins(0, 0, 0, 0)
         for i in range(8):
             row=[]
             for j in range(8):
                 btn=QPushButton(f"button{row_dict.get(j)}{i+1}")
                 btn.setFixedSize(60,60)
-                btn.setProperty("x",7 - j)
-                btn.setProperty("y",i)
+                btn.setIconSize(btn.size())
+                btn.setProperty("x",i)
+                btn.setProperty("y",j)
                 
                 btn.setText("")                                                 #Isimleri kaldir
-                btn.setStyleSheet("background-color: #769656; border: none;")   #Karelerin rengini belirle
+                if (i + j) % 2 == 0:
+                    btn.setStyleSheet("background-color: #eeeed2; border: none;")
+                else:
+                    btn.setStyleSheet("background-color: #769656; border: none;")   #Karelerin rengini belirle
 
                 btn.clicked.connect(self.on_click)
-                self.window.gridLayout_4.addWidget(btn,7 - j,i)
+                if self.my_color == "white":
+                    self.window.gridLayout_4.addWidget(btn, 7 - i, j)
+                else:
+                    self.window.gridLayout_4.addWidget(btn, i, j)
                 row.append(btn)
             self.buttons.append(row)
 
@@ -125,10 +135,12 @@ class Frame(QObject):
         
 
 
-    def get_request_possible_moves(self):
+    def get_request_possible_moves(self,from_button):
+        from_x=from_button.property("x")
+        from_y=from_button.property("y")
+        self.possible_moves_signal.emit(from_x,from_y)
         pass
-    def clear_highlights(self):
-        pass
+
     def send_move(self, from_button, to_button):
         from_x=from_button.property("x")
         from_y=from_button.property("y")
@@ -136,6 +148,29 @@ class Frame(QObject):
         to_y=to_button.property("y")
         self.move_signal.emit(from_x,from_y,to_x,to_y)
 
+
+
+
+    def highlight_moves(self, moves):
+        self.last_higlighted_buttons=moves
+        for (x, y) in moves:
+            self.buttons[x][y].setStyleSheet(
+                "background-color: #f6f669; border: none;"
+            )
+    def clear_highlights(self):
+        for (x, y) in self.last_higlighted_buttons:
+            self.buttons[x][y].setStyleSheet(
+                "background-color: #769656; border: none;"
+            )
+
+    
+
+    def handle_turn(self,is_myturn):
+        self.myturn=is_myturn
+        
+
+    def handle_chat(self,user,message):
+        self.window.textEdit.append(f"{user}: {message}")
 
 
     def load_board(self,server_game_board):
