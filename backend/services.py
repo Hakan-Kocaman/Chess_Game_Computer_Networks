@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from models.GameBoard import game_board
+from models.GameBoard import GameBoard as game_board
 from player import player_list
 import global_variables
 from logger import logger

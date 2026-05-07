@@ -1,10 +1,6 @@
-
-from Bishop import Bishop
-from King import King
-from Knight import Knight
-from Pawn import Pawn
-from Queen import Queen
-from Rook import Rook
+import sys
+import os
+sys.path.append(os.path.dirname(__file__)) 
 
 
 class GameBoard:
@@ -24,6 +20,13 @@ class GameBoard:
         
     def init_pieces(self):
         # Initialize pawns
+        from Bishop import Bishop
+        from King import King
+        from Knight import Knight
+        from Pawn import Pawn
+        from Queen import Queen
+        from Rook import Rook
+
         for i in range(8):
             self.board[1][i] = Pawn("white", (1, i))
             self.board[6][i] = Pawn("black", (6, i))

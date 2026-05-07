@@ -1,5 +1,9 @@
 from abc import ABC, abstractmethod
-from GameBoard import game_board
+
+import sys
+import os
+sys.path.append(os.path.dirname(__file__)) 
+
 from King import King
      # Abstract Taş Class
 class ChessPiece(ABC):
@@ -11,6 +15,7 @@ class ChessPiece(ABC):
     def get_possible_moves(self):
         pass
     def move(self, new_position):
+        from GameBoard import game_board
         possible_moves = self.get_possible_moves()
         move_result = "unsuccessful move"
        
@@ -49,4 +54,5 @@ class ChessPiece(ABC):
 
 
     def die(self):
+        from GameBoard import game_board
         game_board[self.position[0]][self.position[1]] = None

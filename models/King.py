@@ -1,7 +1,10 @@
+import sys
+import os
+sys.path.append(os.path.dirname(__file__)) 
 
+from GameBoard import game_board
     # Şah Class
 from ChessPiece import ChessPiece
-from GameBoard import game_board
 from Queen import Queen
 from Bishop import Bishop
 from Rook import Rook
@@ -42,7 +45,6 @@ class King(ChessPiece):
                     break  # kendi taşı, dur
         return self.possible_moves
     def is_threatened(self, target_position):
-        result=False
 
         linear_threats =[(0,1), (1,0), (0,-1), (-1,0)]
         for dx, dy in linear_threats:
