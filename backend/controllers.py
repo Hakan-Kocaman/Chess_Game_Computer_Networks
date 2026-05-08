@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import services
 from logger import logger
-from dtos.responses import chat_response, get_possible_moves_response, move_response
+from dtos.server_responses import chat_response, get_possible_moves_response, move_response
 
 # client gateway controllers
 def chat_controller(request):

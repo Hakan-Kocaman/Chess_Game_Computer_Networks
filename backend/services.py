@@ -8,7 +8,7 @@ from player import player_list
 import global_variables
 from logger import logger
 import pickle
-from dtos.responses import move_response, get_possible_moves_response, chat_response, start_game_response, turn_change_response, finish_game_response
+from dtos.server_responses import move_response, get_possible_moves_response, chat_response, start_game_response, turn_change_response, finish_game_response
 
 def chat_service(request):
     reciever_list = []

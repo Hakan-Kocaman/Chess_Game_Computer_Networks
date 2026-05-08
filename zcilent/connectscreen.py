@@ -1,4 +1,8 @@
 
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 import os
 import sys
 from PySide6.QtWidgets import QApplication, QMessageBox, QPushButton, QStackedWidget
@@ -7,7 +11,7 @@ import socket
 
 from PySide6.QtCore import QThread, Signal
 from frame import Frame
-from requests import move_request,chat_request,get_possible_moves_request
+from dtos.client_requests import move_request,chat_request,get_possible_moves_request
 
 
 import pickle
