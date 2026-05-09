@@ -13,10 +13,10 @@ class player:
         self.determine_color
 
     def determine_color(self):
-        if self == player_list[0]:
+        if self == player_list[1]:
             self.color = "black" if any(p.color == "white" for p in player_list) else "white"
             return 
-        elif self == player_list[1]:
+        elif self == player_list[0]:
             self.color = random.choice(colors)
             return 
         else: 
