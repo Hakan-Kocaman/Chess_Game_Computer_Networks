@@ -38,27 +38,19 @@ class Connect:
 
         self.button=QPushButton()
         self.button=self.window.pushButton
+        self.button.setText("Connect")
         self.button.clicked.connect(self.connect_pressed)
         self.my_color=None
         self.myturn={"myturn":None}
-        self.username = ""
+        self.id = None
         self.server_ip = ""
         self.stack.setCurrentIndex(0)
 
     def connect_pressed(self):
             server_ip=self.window.lineEdit_2.text().strip()
-            username=self.window.lineEdit.text().strip()
             server_port=5050
             print(f"IP: '{server_ip}'")  # tırnaklar arasında ne var gör
-            print(f"Username: '{username}'")
 
-            if username =="":
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Critical)
-                msg.setText("Error: enter username")
-                msg.setWindowTitle("Error")
-                msg.exec()
-                return
             if server_ip == "":
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
@@ -88,10 +80,11 @@ class Connect:
                 if server_response["URL"] == "initial":
                     print("[CLIENT] Erişim onaylandi! Tahtaya geçiliyor...")
                     self.stack.setCurrentIndex(1)
-                    self.my_color=server_response["player"]
+                    self.my_color=server_response["player_color"]
+                    self.id=server_response["player_id"]
                     starter_game_board=server_response["game_board"]
                     
-                    self.play_screen.create_buttons(self.my_color)
+                    self.play_screen.create_buttons(self.my_color,self.id)
 
                     self.play_screen.load_board(starter_game_board)
 
@@ -102,7 +95,7 @@ class Connect:
 
 
                                     # thread başlat
-                    self.msg_thread = messagethread(self.socket,self.username)
+                    self.msg_thread = messagethread(self.socket,self.id)
                     self.msg_thread.possible_moves_received.connect(self.play_screen.highlight_moves)
                     self.msg_thread.move_received.connect(self.play_screen.update_board)
                     self.msg_thread.turn_received.connect(self.play_screen.handle_turn)
@@ -136,18 +129,18 @@ class Connect:
 
         request=move_request(
             URL="move",
-            sender=self.username,
+            sender=self.id,
             selected_piece=(from_x,from_y),
             new_position=(to_x,to_y)
         )
         self.socket.sendall(pickle.dumps(request))
                 
     def send_possible_moves_request(self,from_x,from_y):
-        packet=get_possible_moves_request(URL="get_possible_moves",sender=self.username,selected_piece=(from_x,from_y))
+        packet=get_possible_moves_request(URL="get_possible_moves",sender=self.id,selected_piece=(from_x,from_y))
         self.socket.sendall(pickle.dumps(packet))
 
     def send_chat(self,message_content):
-        packet=chat_request(URL="chat",sender=self.username,message=message_content)
+        packet=chat_request(URL="chat",sender= {self.id},message=message_content)
         self.socket.sendall(pickle.dumps(packet))
             
 
@@ -167,10 +160,10 @@ class messagethread(QThread):
     check_received=Signal(str)
 
     
-    def __init__(self, socket,username):
+    def __init__(self, socket,id):
         super().__init__()
         self.socket = socket
-        self.my_username=username
+        self.id=id
         
 
     
@@ -191,16 +184,16 @@ class messagethread(QThread):
                             self.move_received.emit("succesfull")
                         if received_packet.move_result=="unsuccessful move":
                             self.move_received.emit("fail")
-                        if received_packet.move_result=="capture":
+                        if received_packet.move_result.startswith("capture"):
                             self.move_received.emit("capture")
-                        if received_packet.move_result=="check":
+                        if received_packet.move_result.startswith("check"):
                             self.check_received.emit(received_packet.move_result)
-                        if received_packet.move_result=="checkmate":
+                        if received_packet.move_result.startswith("checkmate"):
                             self.check_received.emit(received_packet.move_result)
                         
                         if received_packet.move_result!="unsuccessful move": 
                             # sender ben miyim?
-                            if received_packet.sender != self.my_username:
+                            if received_packet.sender != self.id:
                                 # rakip oynadı, sıra bende
                                 self.turn_received.emit(True)
                             else:

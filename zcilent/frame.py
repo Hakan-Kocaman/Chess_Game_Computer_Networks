@@ -26,6 +26,7 @@ class Frame(QObject):
         self.window = loader.load(ui_path)
 
         self.my_color=None
+        self.id=None
         self.myturn=False
         self.selected_button=None
 
@@ -74,6 +75,7 @@ class Frame(QObject):
 
         self.chat_button=QPushButton("")
         self.chat_button=self.window.pushButton
+        self.chat_button.setText("Send")
         self.chat_button.clicked.connect(self.chat_on_click)
 
         self.line_edit=QLineEdit("")
@@ -81,8 +83,9 @@ class Frame(QObject):
 
        
         
-    def create_buttons(self,my_color):
+    def create_buttons(self,my_color,id):
         self.my_color=my_color
+        self.id=id
         if self.my_color=="white":
             self.myturn=True
         else:
