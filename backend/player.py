@@ -1,4 +1,4 @@
-from bisect import bisect
+
 import random
 
 colors = ["white", "black"]
@@ -15,7 +15,7 @@ class player:
     def determine_color(self):
         if self == player_list[0]:
             self.color = "black" if any(p.color == "white" for p in player_list) else "white"
-            return
+            return 
         elif self == player_list[1]:
             self.color = random.choice(colors)
             return 
@@ -24,7 +24,10 @@ class player:
             return 
 
     def get_name(self):
+        if self.color is None:
+            return "Player " + str(self.id)
         return "Player " + str(self.id) + " (" + self.color + ")"
     def __del__(self):
-        bisect.insort(player_id_list, self.id)  
+        player_id_list.append(self.id)
+        player_id_list.sort()
         self.socket.close()
