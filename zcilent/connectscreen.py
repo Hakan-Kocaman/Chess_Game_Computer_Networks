@@ -161,7 +161,7 @@ class Connect:
 
 class messagethread(QThread):
     possible_moves_received = Signal(list)
-    move_received = Signal()
+    move_received = Signal(str)
     turn_received=Signal(bool)
     chat_received=Signal(str,str)
     check_received=Signal(str)
@@ -177,6 +177,12 @@ class messagethread(QThread):
     
     def run(self):
         while True:
+            # cases
+            # move_result = "unsuccessful move"
+            # move_result = "move"
+            # move_result = "capture..."
+            # move_result = "check..."
+            # move_result = "checkmate..."
             try:
                 received_pickle=self.socket.recv(1024)
                 received_packet=pickle.loads(received_pickle)
@@ -186,7 +192,7 @@ class messagethread(QThread):
                         if received_packet.move_result=="unsuccessful move":
                             self.move_received.emit("fail")
                         if received_packet.move_result=="capture":
-                            self.move_received.emit()
+                            self.move_received.emit("capture")
                         if received_packet.move_result=="check":
                             self.check_received.emit(received_packet.move_result)
                         if received_packet.move_result=="checkmate":
