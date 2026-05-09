@@ -291,7 +291,12 @@ class Frame(QObject):
                     button.setIcon(QIcon())
         print(f"color:{self.my_color}")
 
-    def update_board(self,str):
+
+
+    #move_result = "capture "+game_board[new_position[0]][new_position[1]].color+ " "+game_board[new_position[0]][new_position[1]].__class__.__name__
+    def update_board(self,str1):
+        parts = str1.split()
+
         if (str=="fail"):
             if self.myturn:
                 QMessageBox.warning(self.window, "Unsuccesfull move", "Unsuccesfull move")

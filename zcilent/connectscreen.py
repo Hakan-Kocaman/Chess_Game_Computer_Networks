@@ -81,7 +81,6 @@ class Connect:
                     print("[CLIENT] Erişim onaylandi! Tahtaya geçiliyor...")
                     self.stack.setCurrentIndex(1)
                     self.my_color=server_response["player_color"]
-                    self.id=server_response["player_id"]
                     starter_game_board=server_response["game_board"]
                     
                     self.play_screen.create_buttons(self.my_color,self.id)
@@ -180,12 +179,12 @@ class messagethread(QThread):
                 received_pickle=self.socket.recv(1024)
                 received_packet=pickle.loads(received_pickle)
                 if received_packet.URL=="move":
-                        if received_packet.move_result=="move":
-                            self.move_received.emit("succesfull")
-                        if received_packet.move_result=="unsuccessful move":
-                            self.move_received.emit("fail")
+                        if received_packet.move_result.startswith("move"):
+                            self.move_received.emit(received_packet.move_result)
+                        if received_packet.move_result.startswith("unsuccessful move"):
+                            self.move_received.emit(received_packet.move_result)
                         if received_packet.move_result.startswith("capture"):
-                            self.move_received.emit("capture")
+                            self.move_received.emit(received_packet.move_result)
                         if received_packet.move_result.startswith("check"):
                             self.check_received.emit(received_packet.move_result)
                         if received_packet.move_result.startswith("checkmate"):
