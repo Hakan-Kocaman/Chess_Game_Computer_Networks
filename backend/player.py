@@ -10,6 +10,7 @@ class player:
         self.address = address
         self.id = player_id_list.pop(0)
         self.color = None
+        self.determine_color
 
     def determine_color(self):
         if self == player_list[0]:

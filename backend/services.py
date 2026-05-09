@@ -86,7 +86,6 @@ def start_game_service():
 
     reciever_list = []
     for player in player_list:
-        player.determine_color()
         if player.color == "white":
             white_player = player.id
         elif player.color =="black":
