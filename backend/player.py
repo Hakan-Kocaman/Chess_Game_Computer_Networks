@@ -9,16 +9,18 @@ class player:
         self.socket = socket
         self.address = address
         self.id = player_id_list.pop(0)
-        self.color = self.determine_color()
-        print(self.color)
+        self.color = None
 
     def determine_color(self):
-        if len(player_list) >= 2:
-            return "watcher"
-        if len(player_list) == 0:
-            return random.choice(colors)
+        if self == player_list[0]:
+            self.color = "black" if any(p.color == "white" for p in player_list) else "white"
+            return
+        elif self == player_list[1]:
+            self.color = random.choice(colors)
+            return 
         else: 
-            return "black" if any(p.color == "white" for p in player_list) else "white"
+            self.color = "watcher"   
+            return 
 
     def get_name(self):
         return "Player " + str(self.id) + " (" + self.color + ")"

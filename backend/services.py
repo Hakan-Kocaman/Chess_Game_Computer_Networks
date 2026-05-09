@@ -55,10 +55,16 @@ def move_service(request):
     selected_piece = request.selected_piece
     selected_piece = game_board[selected_piece[0]][selected_piece[1]]
 
-    if request.sender != global_variables.current_turn:
+    sender_player = None
+    for player in player_list:
+        if player.id == request.sender:
+            sender_player = player
+            break
+
+    if sender_player.color != global_variables.current_turn:
         return
 
-    if request.sender != request.selected_piece.color:
+    if sender_player.color != request.selected_piece.color:
         return
     
     response = move_response(
@@ -69,17 +75,21 @@ def move_service(request):
     broadcast(response, reciever_list)
 
     if response.move_result.startswith("checkmate"):
-        finish_game_service(request.sender, "black" if request.sender == "white" else "white" ,response.move_result)
+        finish_game_service(sender_player.color, "black" if sender_player.color == "white" else "white" ,response.move_result)
         return
 
     turn_change_service()
 
 def start_game_service():
+    white_player = None
+    black_player = None
+
     reciever_list = []
     for player in player_list:
-        if player.color in ["white"]:
+        player.determine_color()
+        if player.color == "white":
             white_player = player.id
-        elif player.color in ["black"]:
+        elif player.color =="black":
             black_player = player.id
         reciever_list.append(player.socket)
 
