@@ -81,6 +81,7 @@ class Connect:
                     print("[CLIENT] Erişim onaylandi! Tahtaya geçiliyor...")
                     self.stack.setCurrentIndex(1)
                     self.my_color=server_response["player_color"]
+                    self.id=server_response["player_id"]
                     starter_game_board=server_response["game_board"]
                     
                     self.play_screen.create_buttons(self.my_color,self.id)
