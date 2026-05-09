@@ -1,2 +1,1 @@
-
-                    self.msg_thread = messagethread(self.socket,self.usern
+            print(f"IP: '{server_ip}'")  # tırnaklar arasında ne var gör

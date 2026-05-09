@@ -34,7 +34,7 @@ def get_possible_moves_service(request):
             break
 
     selected_piece = request.selected_piece
-    selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]] 
+    selected_piece = game_board[selected_piece[0]][selected_piece[1]] 
     
     possible_moves = selected_piece.get_possible_moves()
 
@@ -53,7 +53,7 @@ def move_service(request):
         reciever_list.append(player.socket)
 
     selected_piece = request.selected_piece
-    selected_piece = game_board[selected_piece.position[0]][selected_piece.position[1]]
+    selected_piece = game_board[selected_piece[0]][selected_piece[1]]
 
     if request.sender != global_variables.current_turn:
         return
@@ -78,9 +78,9 @@ def start_game_service():
     reciever_list = []
     for player in player_list:
         if player.color in ["white"]:
-            white_player = player
+            white_player = player.id
         elif player.color in ["black"]:
-            black_player = player
+            black_player = player.id
         reciever_list.append(player.socket)
 
     response = start_game_response( 
