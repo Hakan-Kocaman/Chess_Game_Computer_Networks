@@ -10,14 +10,15 @@ class player:
         self.address = address
         self.id = player_id_list.pop(0)
         self.color = None
+        player_list.append(self)
         self.determine_color()
 
     def determine_color(self):
-        if self == player_list[1]:
-            self.color = "black" if any(p.color == "white" for p in player_list) else "white"
+        if self == player_list[0]:
+            player_list[0].color = random.choice(colors)
             return 
-        elif self == player_list[0]:
-            self.color = random.choice(colors)
+        elif self == player_list[1]:
+            player_list[1].color = "black" if any(p.color == "white" for p in player_list) else "white"
             return 
         else: 
             self.color = "watcher"   

@@ -14,7 +14,6 @@ def start_server():
     while True:
         player_socket, address = socket_manager.server_socket.accept()
         new_player = player(player_socket, address)
-        player_list.append(new_player) 
         logger.info(f"New player connected: {new_player.get_name()} from {address}")
         handle_player_connection(new_player)
 
