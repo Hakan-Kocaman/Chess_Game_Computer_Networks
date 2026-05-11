@@ -3,18 +3,18 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from models.GameBoard import GameBoard as game_board
-from player import player_list
 import global_variables
+from player import player_list
+from models.GameBoard import game_board
 from logger import logger
 import pickle
 from dtos.server_responses import move_response, get_possible_moves_response, chat_response, start_game_response, turn_change_response, finish_game_response
 
 def chat_service(request):
-    reciever_list = []
+    reciever_list = [] 
 
     for player in player_list:
-        if player.color != request.sender:
+        if player.id != request.sender:
             reciever_list.append(player.socket)
     
     response = chat_response(
@@ -29,12 +29,12 @@ def get_possible_moves_service(request):
 
     reciever_list = []
     for player in player_list:
-        if player.color == request.sender:
+        if player.id == (request.sender):
             reciever_list.append(player.socket)
             break
 
     selected_piece = request.selected_piece
-    selected_piece = game_board[selected_piece[0]][selected_piece[1]] 
+    selected_piece = game_board.board[selected_piece[0]][selected_piece[1]] 
     
     possible_moves = selected_piece.get_possible_moves()
 
@@ -53,13 +53,16 @@ def move_service(request):
         reciever_list.append(player.socket)
 
     selected_piece = request.selected_piece
-    selected_piece = game_board[selected_piece[0]][selected_piece[1]]
+    selected_piece = game_board.board[selected_piece[0]][selected_piece[1]]
 
     sender_player = None
     for player in player_list:
         if player.id == request.sender:
             sender_player = player
             break
+
+    if selected_piece == None:
+        return
 
     if sender_player.color != global_variables.current_turn:
         return
@@ -134,4 +137,4 @@ def broadcast(response, reciever_list):
     logger.info(f"Broadcasting response for {response.URL} to {len(reciever_list)} clients.")
     if reciever_list:
         for socket in reciever_list:
-            socket.send(pickle.dumps(response))
+            socket.sendall(pickle.dumps(response))

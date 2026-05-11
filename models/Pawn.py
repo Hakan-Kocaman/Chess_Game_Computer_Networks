@@ -4,7 +4,7 @@ sys.path.append(os.path.dirname(__file__))
 
     # Piyon Class
 from ChessPiece import ChessPiece
-from GameBoard import game_board
+
 
 
 class Pawn(ChessPiece):
@@ -18,6 +18,7 @@ class Pawn(ChessPiece):
         self.FirstMove = True  # Piyonun ilk hamlesi 
 
     def get_possible_moves(self):
+        from GameBoard import game_board
         self.possible_moves = []
         for dx, dy in self.move_pattern:
             for step in range(1, 8):
@@ -27,7 +28,7 @@ class Pawn(ChessPiece):
                 if not (0 <= nx < 8 and 0 <= ny < 8):
                     break  # tahtadan çıktı
             
-                target = game_board[nx][ny]
+                target = game_board.board[nx][ny]
             
                 if target is None:
                     self.possible_moves.append((nx, ny))  # boş kare ve dur
@@ -38,7 +39,7 @@ class Pawn(ChessPiece):
             nx = self.position[0] + dx
             ny = self.position[1] + dy
             if 0 <= nx < 8 and 0 <= ny < 8:
-                target = game_board[nx][ny]
+                target = game_board.board[nx][ny]
                 if target is not None and target.color != self.color:
                     self.possible_moves.append((nx, ny))  # düşman ye, dur
 

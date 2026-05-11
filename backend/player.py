@@ -1,5 +1,6 @@
 
 import random
+from logger import logger
 
 colors = ["white", "black"]
 player_list = []
@@ -14,6 +15,7 @@ class player:
         self.determine_color()
 
     def determine_color(self):
+        logger.debug(f"Determining color for {len(player_list)} players")
         if self == player_list[0]:
             player_list[0].color = random.choice(colors)
             return 
