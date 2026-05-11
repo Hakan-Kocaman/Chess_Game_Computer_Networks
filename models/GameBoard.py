@@ -4,16 +4,6 @@ sys.path.append(os.path.dirname(__file__))
 
 
 class GameBoard:
-    starting_board = [
-    ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"], # Siyah taşlar
-    ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
-    ["·", "·", "·", "·", "·", "·", "·", "·"], # Boş kareler
-    ["·", "·", "·", "·", "·", "·", "·", "·"],
-    ["·", "·", "·", "·", "·", "·", "·", "·"],
-    ["·", "·", "·", "·", "·", "·", "·", "·"],
-    ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"], # Beyaz taşlar
-    ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"]
-    ]
     def __init__(self):
         self.board = [[None for _ in range(8)] for _ in range(8)]
         self.init_pieces()
@@ -59,3 +49,4 @@ class GameBoard:
 
 
 
+game_board = GameBoard()

@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(__file__)) 
 
-from GameBoard import game_board
+
     # Şah Class
 from ChessPiece import ChessPiece
 from Queen import Queen
@@ -20,6 +20,7 @@ class King(ChessPiece):
         self.move_pattern = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1), (-1, -1)]  # Şah hem düz hem çapraz hareket eder
     
     def get_possible_moves(self):
+        from GameBoard import game_board
         self.possible_moves = []
         for dx, dy in self.move_pattern:
             for step in range(1, 8):
@@ -32,7 +33,7 @@ class King(ChessPiece):
                 if self.is_threatened((nx, ny)):
                     break
 
-                target = game_board[nx][ny]
+                target = game_board.board[nx][ny]
             
                 if target is None:
                     self.possible_moves.append((nx, ny))  # boş kare ve dur
@@ -45,14 +46,14 @@ class King(ChessPiece):
                     break  # kendi taşı, dur
         return self.possible_moves
     def is_threatened(self, target_position):
-
+        from GameBoard import game_board
         linear_threats =[(0,1), (1,0), (0,-1), (-1,0)]
         for dx, dy in linear_threats:
             for step in range(1,8):
                 nx = target_position[0] + dx * step
                 ny = target_position[1] + dy * step
                 if 0 <= nx < 8 and 0 <= ny < 8:
-                    target = game_board[nx][ny]
+                    target = game_board.board[nx][ny]
                     if target is not None and target.color == self.color:# aynı renk taş
                         break
                     if step==1:
@@ -69,7 +70,7 @@ class King(ChessPiece):
                 nx = target_position[0] + dx * step
                 ny = target_position[1] + dy * step
                 if 0 <= nx < 8 and 0 <= ny < 8:
-                    target = game_board[nx][ny]
+                    target = game_board.board[nx][ny]
                     if target is not None and target.color == self.color:# aynı renk taş
                         break
                     if step==1:
@@ -87,7 +88,7 @@ class King(ChessPiece):
                 ny = target_position[1] + dy * step
                 if 0 <= nx < 8 and 0 <= ny < 8:
 
-                    target = game_board[nx][ny]
+                    target = game_board.board[nx][ny]
                     if target is not None and target.color == self.color:# aynı renk taş
                         break
                     if target is not None and target.color != self.color and isinstance(target, Knight):

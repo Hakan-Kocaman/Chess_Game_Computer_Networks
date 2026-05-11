@@ -51,20 +51,20 @@ class Frame(QObject):
         piece_order = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
         self.piece_icons = {
         # Siyah Taşlar
-        "♜": "zcilent/chess_pieces_pngs/black-rook.png",
-        "♞": "zcilent/chess_pieces_pngs/black-knight.png",
-        "♝": "zcilent/chess_pieces_pngs/black-bishop.png",
-        "♛": "zcilent/chess_pieces_pngs/black-queen.png",
-        "♚": "zcilent/chess_pieces_pngs/black-king.png",
-        "♟": "zcilent/chess_pieces_pngs/black-pawn.png",
+        "♜": "chess_pieces_pngs/black-rook.png",
+        "♞": "chess_pieces_pngs/black-knight.png",
+        "♝": "chess_pieces_pngs/black-bishop.png",
+        "♛": "chess_pieces_pngs/black-queen.png",
+        "♚": "chess_pieces_pngs/black-king.png",
+        "♟": "chess_pieces_pngs/black-pawn.png",
         
         # Beyaz Taşlar
-        "♖": "zcilent/chess_pieces_pngs/white-rook.png",
-        "♘": "zcilent/chess_pieces_pngs/white-knight.png",
-        "♗": "zcilent/chess_pieces_pngs/white-bishop.png",
-        "♕": "zcilent/chess_pieces_pngs/white-queen.png",
-        "♔": "zcilent/chess_pieces_pngs/white-king.png",
-        "♙": "zcilent/chess_pieces_pngs/white-pawn.png",
+        "♖": "chess_pieces_pngs/white-rook.png",
+        "♘": "chess_pieces_pngs/white-knight.png",
+        "♗": "chess_pieces_pngs/white-bishop.png",
+        "♕": "chess_pieces_pngs/white-queen.png",
+        "♔": "chess_pieces_pngs/white-king.png",
+        "♙": "chess_pieces_pngs/white-pawn.png",
         
         # Boş Kare
         "·": None, 

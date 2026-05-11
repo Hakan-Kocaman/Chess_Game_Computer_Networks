@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.dirname(__file__)) 
     # Kale Class
 from ChessPiece import ChessPiece
-from GameBoard import game_board
+
 
 
 class Rook(ChessPiece):
@@ -12,6 +12,7 @@ class Rook(ChessPiece):
         self.move_pattern = [(1, 0), (-1, 0), (0, 1), (0, -1)]  # Kale düz hareket eder
     
     def get_possible_moves(self):
+        from GameBoard import game_board
         self.possible_moves = []
         for dx, dy in self.move_pattern:
             for step in range(1, 8):
@@ -19,7 +20,7 @@ class Rook(ChessPiece):
                 ny = self.position[1] + dy * step
                 if not (0 <= nx < 8 and 0 <= ny < 8):
                     break  # tahtadan çıktı
-                target = game_board[nx][ny]
+                target = game_board.board[nx][ny]
                 if target is None:
                     self.possible_moves.append((nx, ny))  # boş kare devam
                 elif target.color != self.color:
