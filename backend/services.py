@@ -53,7 +53,8 @@ def move_service(request):
         reciever_list.append(player.socket)
 
     selected_piece = request.selected_piece
-    selected_piece = game_board.board[selected_piece[0]][selected_piece[1]]
+    selected_piece_temp=selected_piece
+    selected_piece = game_board.board[selected_piece_temp[0]][selected_piece_temp[1]]
 
     sender_player = None
     for player in player_list:

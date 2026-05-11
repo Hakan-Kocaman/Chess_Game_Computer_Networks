@@ -51,20 +51,20 @@ class Frame(QObject):
         piece_order = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
         self.piece_icons = {
         # Siyah Taşlar
-        "♜": "chess_pieces_pngs/black-rook.png",
-        "♞": "chess_pieces_pngs/black-knight.png",
-        "♝": "chess_pieces_pngs/black-bishop.png",
-        "♛": "chess_pieces_pngs/black-queen.png",
-        "♚": "chess_pieces_pngs/black-king.png",
-        "♟": "chess_pieces_pngs/black-pawn.png",
+        "♜": "zcilent/chess_pieces_pngs/black-rook.png",
+        "♞": "zcilent/chess_pieces_pngs/black-knight.png",
+        "♝": "zcilent/chess_pieces_pngs/black-bishop.png",
+        "♛": "zcilent/chess_pieces_pngs/black-queen.png",
+        "♚": "zcilent/chess_pieces_pngs/black-king.png",
+        "♟": "zcilent/chess_pieces_pngs/black-pawn.png",
         
         # Beyaz Taşlar
-        "♖": "chess_pieces_pngs/white-rook.png",
-        "♘": "chess_pieces_pngs/white-knight.png",
-        "♗": "chess_pieces_pngs/white-bishop.png",
-        "♕": "chess_pieces_pngs/white-queen.png",
-        "♔": "chess_pieces_pngs/white-king.png",
-        "♙": "chess_pieces_pngs/white-pawn.png",
+        "♖": "zcilent/chess_pieces_pngs/white-rook.png",
+        "♘": "zcilent/chess_pieces_pngs/white-knight.png",
+        "♗": "zcilent/chess_pieces_pngs/white-bishop.png",
+        "♕": "zcilent/chess_pieces_pngs/white-queen.png",
+        "♔": "zcilent/chess_pieces_pngs/white-king.png",
+        "♙": "zcilent/chess_pieces_pngs/white-pawn.png",
         
         # Boş Kare
         "·": None, 
@@ -253,11 +253,14 @@ class Frame(QObject):
         button.setStyleSheet(f"""background-color: {color};border: none;""")
     
     def highlight_moves(self, moves):
+        self.clear_highlights()
         self.last_higlighted_buttons=[(int(x), int(y)) for (x, y) in moves]
         for (x, y) in self.last_higlighted_buttons:
-            self.buttons[x][y].setStyleSheet(
-                "background-color: #f6f669; border: none;"
-            )
+            print(f"higlight{x},{y}")
+            if 0 <= x < 8 and 0 <= y < 8:
+                self.buttons[x][y].setStyleSheet(
+                    "background-color: #f6f669; border: none;"
+                )
     def clear_highlights(self):
         for (x, y) in self.last_higlighted_buttons:
             if (x + y) % 2 == 0:
@@ -292,12 +295,17 @@ class Frame(QObject):
         print(f"color:{self.my_color}")
 
 
-
+        # move_result = "unsuccessful move"
+        # pos_title = "from_x,from_y,to_x,to_y"
+        # move_result = "move,pos_title"
+        # move_result = "capture,pos_title"
+        # move_result = "check,pos_title"
+        # move_result = "checkmate,pos_title"
     #move_result = "capture "+game_board[new_position[0]][new_position[1]].color+ " "+game_board[new_position[0]][new_position[1]].__class__.__name__
     def update_board(self,str1):
-        parts = str1.split()
+        parts = str1.split(',')
 
-        if (str=="fail"):
+        if (parts[0]=="unsuccessful move"):
             if self.myturn:
                 QMessageBox.warning(self.window, "Unsuccesfull move", "Unsuccesfull move")
             return
@@ -305,10 +313,12 @@ class Frame(QObject):
         oldy=int()
         newx=int()
         newy=int()
-        self.playedbuttons[0]=oldx
-        self.playedbuttons[1]=oldy
-        self.playedbuttons[2]=newx
-        self.playedbuttons[3]=newy
+        parts[1]=oldx
+        parts[2]=oldy
+        parts[3]=newx
+        parts[4]=newy
+
+        print(f"updateboardcontrol{oldx},{oldy,{newx},{newy}}")
         
         self.remove_border(self.last_white_king_btn)
         self.remove_border(self.last_black_king_btn)
@@ -328,17 +338,19 @@ class Frame(QObject):
 
         ##BURAYA GERIYE HAMLENIN NOTASYONU DONDURULEBILIR
 
-    def update_board_with_check(self,str):
+    def update_board_with_check(self,str1):
+        parts = str1.split(',')
+
         oldx=int()
         oldy=int()
         newx=int()
         newy=int()
-        self.playedbuttons[0]=oldx
-        self.playedbuttons[1]=oldy
-        self.playedbuttons[2]=newx
-        self.playedbuttons[3]=newy
+        parts[1]=oldx
+        parts[2]=oldy
+        parts[3]=newx
+        parts[4]=newy
 
-        if self.myturn==False and str=="check":
+        if self.myturn==False and parts[0]=="check":
             QMessageBox.warning(self.window, "Check", "You have been checked")
             for row in range(8):
                 for col in range(8):
@@ -350,7 +362,7 @@ class Frame(QObject):
                         if self.server_game_board[row][col]=="♚":
                             self.last_black_king_btn=self.buttons[row][col]
                             self.put_border(self.last_white_black_btn)
-        if self.myturn==False and str=="checkmate":
+        if self.myturn==False and parts[0]=="checkmate":
             QMessageBox.warning(self.window, "Checkmate", "Game over")
             for row in range(8):
                 for col in range(8):
