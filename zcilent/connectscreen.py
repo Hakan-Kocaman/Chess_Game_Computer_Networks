@@ -140,7 +140,7 @@ class Connect:
         self.socket.sendall(pickle.dumps(packet))
 
     def send_chat(self,message_content):
-        packet=chat_request(URL="chat",sender= {self.id},message=message_content)
+        packet=chat_request(URL="chat",sender= "Player "+str(self.id),message=message_content)
         self.socket.sendall(pickle.dumps(packet))
             
 

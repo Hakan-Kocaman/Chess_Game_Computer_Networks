@@ -14,7 +14,7 @@ def chat_service(request):
     reciever_list = [] 
 
     for player in player_list:
-        if player.color != request.sender:
+        if player.id != request.sender:
             reciever_list.append(player.socket)
     
     response = chat_response(
@@ -29,7 +29,7 @@ def get_possible_moves_service(request):
 
     reciever_list = []
     for player in player_list:
-       # if player.color == request.sender:
+        if player.id == (request.sender):
             reciever_list.append(player.socket)
             break
 
@@ -60,6 +60,9 @@ def move_service(request):
         if player.id == request.sender:
             sender_player = player
             break
+
+    if selected_piece == None:
+        return
 
     if sender_player.color != global_variables.current_turn:
         return
