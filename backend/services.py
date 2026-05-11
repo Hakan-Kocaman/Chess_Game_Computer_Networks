@@ -137,4 +137,4 @@ def broadcast(response, reciever_list):
     logger.info(f"Broadcasting response for {response.URL} to {len(reciever_list)} clients.")
     if reciever_list:
         for socket in reciever_list:
-            socket.send(pickle.dumps(response))
+            socket.sendall(pickle.dumps(response))

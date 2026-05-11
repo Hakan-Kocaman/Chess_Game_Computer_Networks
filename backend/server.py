@@ -41,7 +41,7 @@ def handle_player_connection(new_player):
         "state": global_variables.game_state,
     }
     handshake = pickle.dumps(initial_packet)
-    new_player.socket.send(handshake) 
+    new_player.socket.sendall(handshake) 
 
     if len(player_list) > 1 and global_variables.game_state != global_variables.game_states[1]:  
         start_game_service()
