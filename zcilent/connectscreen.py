@@ -171,6 +171,14 @@ class messagethread(QThread):
     
     def run(self):
         while True:
+            # move_result = "unsuccessful move"
+            # pos_title = "from_x,from_y,to_x,to_y"
+            # move_result = "move,pos_title"
+            # move_result = "capture,pos_title"
+            # move_result = "check,pos_title"
+            # move_result = "checkmate,pos_title"
+
+
             # cases
             # move_result = "unsuccessful move"
             # move_result = "move"
@@ -181,6 +189,7 @@ class messagethread(QThread):
                 received_pickle=self.socket.recv(1024)
                 received_packet=pickle.loads(received_pickle)
                 if received_packet.URL=="move":
+                        print(f"moveresultttttttt{received_packet.move_result}")
                         if received_packet.move_result.startswith("move"):
                             self.move_received.emit(received_packet.move_result)
                         if received_packet.move_result.startswith("unsuccessful move"):
@@ -202,6 +211,7 @@ class messagethread(QThread):
                                 self.turn_received.emit(False)
 
                 elif received_packet.URL=="get_possible_moves":
+                    print(received_packet.possible_moves)
                     self.possible_moves_received.emit(received_packet.possible_moves)
 
                 elif received_packet.URL=="chat":
