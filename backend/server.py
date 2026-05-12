@@ -17,7 +17,6 @@ def start_server():
         logger.info(f"New player connected: {new_player.get_name()} from {address}")
         handle_player_connection(new_player)
 
-        
 
 def handle_player_connection(new_player):
     starting_board = [
@@ -26,7 +25,7 @@ def handle_player_connection(new_player):
     ["·", "·", "·", "·", "·", "·", "·", "·"], # Boş kareler
     ["·", "·", "·", "·", "·", "·", "·", "·"],
     ["·", "·", "·", "·", "·", "·", "·", "·"],
-    ["·", "·", "·", "·", "·", "·", "·", "·"],
+    ["·", "·", "·", "·", "·", "·", "·", "·"],        
     ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"], # Beyaz taşlar
     ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"]
     ]

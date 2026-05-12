@@ -20,8 +20,11 @@ class ChessPiece(ABC):
         possible_moves = self.get_possible_moves()
         move_result = "unsuccessful move"
         pos_title=None
+
+        new_position = (int(new_position[0]), int(new_position[1]))
+
         if new_position in possible_moves:
-            pos_title=self.position[0]+","+self.position[1]+","+new_position[0]+","+new_position[1]
+            pos_title = f"{self.position[0]},{self.position[1]},{new_position[0]},{new_position[1]}"
             move_result = "move,"+pos_title
             if game_board.board[new_position[0]][new_position[1]] is not None:
                 # Taş yeniyor, tahtadan kaldır

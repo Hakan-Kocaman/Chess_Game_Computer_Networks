@@ -6,6 +6,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import global_variables
 from player import player_list
 from models.GameBoard import game_board
+from models.ChessPiece import ChessPiece
+from models.Bishop import Bishop
+from models.King import King
+from models.Knight import Knight
+from models.Pawn import Pawn
+from models.Queen import Queen
+from models.Rook import Rook
 from logger import logger
 import pickle
 from dtos.server_responses import move_response, get_possible_moves_response, chat_response, start_game_response, turn_change_response, finish_game_response
@@ -52,24 +59,37 @@ def move_service(request):
     for player in player_list:
         reciever_list.append(player.socket)
 
-    selected_piece = request.selected_piece
-    selected_piece_temp=selected_piece
-    selected_piece = game_board.board[selected_piece_temp[0]][selected_piece_temp[1]]
+    
+    selected_piece = (game_board.board[request.selected_piece[0]][request.selected_piece[1]])
+
+    if isinstance(selected_piece, Pawn):
+        selected_piece = Pawn(selected_piece.color, selected_piece.position)
+    elif isinstance(selected_piece, Rook):
+        selected_piece = Rook(selected_piece.color, selected_piece.position)
+    elif isinstance(selected_piece, Knight):
+        selected_piece = Knight(selected_piece.color, selected_piece.position)
+    elif isinstance(selected_piece, Bishop):
+        selected_piece = Bishop(selected_piece.color, selected_piece.position)
+    elif isinstance(selected_piece, Queen):
+        selected_piece = Queen(selected_piece.color, selected_piece.position)
+    elif isinstance(selected_piece, King):
+        selected_piece = King(selected_piece.color, selected_piece.position)
 
     sender_player = None
     for player in player_list:
-        if player.id == request.sender:
+        if player.id == int(request.sender):
             sender_player = player
             break
 
     if selected_piece == None:
+        logger.info(f"Move service processed gate 1 move request from {request.sender}. Move details: {request.selected_piece} {request.new_position}")
         return
 
     if sender_player.color != global_variables.current_turn:
+        logger.info(f"Move service processed gate 2 move request from {request.sender}. Move details: {request.selected_piece} {request.new_position}")
         return
 
-    if sender_player.color != request.selected_piece.color:
-        return
+
     
     response = move_response(
         URL=request.URL,

@@ -51,20 +51,20 @@ class Frame(QObject):
         piece_order = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
         self.piece_icons = {
         # Siyah Taşlar
-        "♜": "zcilent/chess_pieces_pngs/black-rook.png",
-        "♞": "zcilent/chess_pieces_pngs/black-knight.png",
-        "♝": "zcilent/chess_pieces_pngs/black-bishop.png",
-        "♛": "zcilent/chess_pieces_pngs/black-queen.png",
-        "♚": "zcilent/chess_pieces_pngs/black-king.png",
-        "♟": "zcilent/chess_pieces_pngs/black-pawn.png",
+        "♜": "chess_pieces_pngs/black-rook.png",
+        "♞": "chess_pieces_pngs/black-knight.png",
+        "♝": "chess_pieces_pngs/black-bishop.png",
+        "♛": "chess_pieces_pngs/black-queen.png",
+        "♚": "chess_pieces_pngs/black-king.png",
+        "♟": "chess_pieces_pngs/black-pawn.png",
         
         # Beyaz Taşlar
-        "♖": "zcilent/chess_pieces_pngs/white-rook.png",
-        "♘": "zcilent/chess_pieces_pngs/white-knight.png",
-        "♗": "zcilent/chess_pieces_pngs/white-bishop.png",
-        "♕": "zcilent/chess_pieces_pngs/white-queen.png",
-        "♔": "zcilent/chess_pieces_pngs/white-king.png",
-        "♙": "zcilent/chess_pieces_pngs/white-pawn.png",
+        "♖": "chess_pieces_pngs/white-rook.png",
+        "♘": "chess_pieces_pngs/white-knight.png",
+        "♗": "chess_pieces_pngs/white-bishop.png",
+        "♕": "chess_pieces_pngs/white-queen.png",
+        "♔": "chess_pieces_pngs/white-king.png",
+        "♙": "chess_pieces_pngs/white-pawn.png",
         
         # Boş Kare
         "·": None, 
@@ -243,6 +243,9 @@ class Frame(QObject):
         print(color)
         
     def remove_border(self,button):
+        if button is None:
+                return
+            
         x=int(button.property("row"))
         y=int(button.property("col"))
         color=None
@@ -309,19 +312,18 @@ class Frame(QObject):
             if self.myturn:
                 QMessageBox.warning(self.window, "Unsuccesfull move", "Unsuccesfull move")
             return
-        oldx=int()
-        oldy=int()
-        newx=int()
-        newy=int()
-        parts[1]=oldx
-        parts[2]=oldy
-        parts[3]=newx
-        parts[4]=newy
+        oldx = int(parts[1])
+        oldy = int(parts[2])
+        newx = int(parts[3])
+        newy = int(parts[4])
 
-        print(f"updateboardcontrol{oldx},{oldy,{newx},{newy}}")
+        print(f"updateboardcontrol{oldx},{oldy},{newx},{newy}")
         
-        self.remove_border(self.last_white_king_btn)
-        self.remove_border(self.last_black_king_btn)
+        if self.last_white_king_btn is not None:
+            self.remove_border(self.last_white_king_btn)
+        if self.last_black_king_btn is not None:
+            self.remove_border(self.last_black_king_btn)
+
         
         
 
@@ -331,7 +333,9 @@ class Frame(QObject):
         newbutton.setProperty("piece", oldbutton.property("piece"))
         oldbutton.setProperty("piece",None)
         self.buttons[oldx][oldy].setIcon(QIcon())
-        self.buttons[newx][newy].setIcon(self.piece_icons[newbutton.property("piece")])
+        piece = newbutton.property("piece")
+        if piece is not None:
+            self.buttons[newx][newy].setIcon(QIcon(self.piece_icons[piece]))
 
         
 
@@ -341,14 +345,10 @@ class Frame(QObject):
     def update_board_with_check(self,str1):
         parts = str1.split(',')
 
-        oldx=int()
-        oldy=int()
-        newx=int()
-        newy=int()
-        parts[1]=oldx
-        parts[2]=oldy
-        parts[3]=newx
-        parts[4]=newy
+        oldx = int(parts[1])
+        oldy = int(parts[2])
+        newx = int(parts[3])
+        newy = int(parts[4])
 
         if self.myturn==False and parts[0]=="check":
             QMessageBox.warning(self.window, "Check", "You have been checked")
@@ -361,7 +361,7 @@ class Frame(QObject):
                     if self.my_color=="black":
                         if self.server_game_board[row][col]=="♚":
                             self.last_black_king_btn=self.buttons[row][col]
-                            self.put_border(self.last_white_black_btn)
+                            self.put_border(self.last_black_king_btn)
         if self.myturn==False and parts[0]=="checkmate":
             QMessageBox.warning(self.window, "Checkmate", "Game over")
             for row in range(8):
@@ -380,7 +380,9 @@ class Frame(QObject):
         newbutton.setProperty("piece", oldbutton.property("piece"))
         oldbutton.setProperty("piece",None)
         self.buttons[oldx][oldy].setIcon(QIcon())
-        self.buttons[newx][newy].setIcon(self.piece_icons[newbutton.property("piece")])
+        piece = newbutton.property("piece")
+        if piece is not None:
+            self.buttons[newx][newy].setIcon(QIcon(self.piece_icons[piece]))
 
 
 

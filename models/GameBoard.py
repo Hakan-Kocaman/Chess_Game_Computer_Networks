@@ -18,8 +18,8 @@ class GameBoard:
         from Rook import Rook
 
         for i in range(8):
-            self.board[1][i] = Pawn("white", (1, i))
-            self.board[6][i] = Pawn("black", (6, i))
+           self.board[1][i] = Pawn("white", (1, i))
+           self.board[6][i] = Pawn("black", (6, i))
         
         # Initialize rooks
         self.board[0][0] = Rook("white", (0, 0))
