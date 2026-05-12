@@ -186,7 +186,7 @@ class messagethread(QThread):
             # move_result = "check..."
             # move_result = "checkmate..."
             try:
-                received_pickle=self.socket.recv(1024)
+                received_pickle=self.socket.recv(4096)
                 received_packet=pickle.loads(received_pickle)
                 if received_packet.URL=="move":
                         print(f"moveresultttttttt{received_packet.move_result}")
