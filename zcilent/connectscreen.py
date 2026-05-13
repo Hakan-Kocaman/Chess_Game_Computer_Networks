@@ -92,6 +92,8 @@ class Connect:
                     self.play_screen.move_signal.connect(self.send_move)
                     self.play_screen.possible_moves_signal.connect(self.send_possible_moves_request)
                     self.play_screen.chat_signal.connect(self.send_chat)
+                    self.play_screen.stackwidget_signal.connect(lambda: self.stack.setCurrentIndex(0))
+                    self.play_screen.replay_signal.connect(self.connect_pressed)
 
 
 
