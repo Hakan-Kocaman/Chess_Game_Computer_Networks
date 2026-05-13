@@ -61,61 +61,38 @@ def move_service(request):
     for player in player_list:
         reciever_list.append(player.socket)
 
-    
-    selected_piece = (game_board.board[request.selected_piece[0]][request.selected_piece[1]])
-
-    logger.info(f"Selected piece: {selected_piece.color} + {selected_piece.__class__.__name__} + {selected_piece.position} to {request.new_position}")
-
-    if isinstance(selected_piece, Pawn):
-        selected_piece = Pawn(selected_piece.color, request.new_position)
-        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
-    elif isinstance(selected_piece, Rook):
-        selected_piece = Rook(selected_piece.color, request.new_position)
-        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
-    elif isinstance(selected_piece, Knight):
-        selected_piece = Knight(selected_piece.color, request.new_position)
-        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
-    elif isinstance(selected_piece, Bishop):
-        selected_piece = Bishop(selected_piece.color, request.new_position)
-        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
-    elif isinstance(selected_piece, Queen):
-        selected_piece = Queen(selected_piece.color, request.new_position)
-        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
-    elif isinstance(selected_piece, King):
-        selected_piece = King(selected_piece.color, request.new_position)
-        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
-
-
-    
-    #eski konumu none yap
-    game_board.board[request.selected_piece[0]][request.selected_piece[1]] = None
-
     sender_player = None
     for player in player_list:
         if player.id == int(request.sender):
             sender_player = player
             break
 
-    if selected_piece == None:
-        logger.info(f"Move service processed gate 1 move request from {request.sender}. Move details: {request.selected_piece} {request.new_position}")
+    if sender_player is None:
         return
 
     if sender_player.color != global_variables.current_turn:
-        logger.info(f"Move service processed gate 2 move request from {request.sender}. Move details: {request.selected_piece} {request.new_position}")
+        logger.info(f"Wrong turn: {request.sender}")
         return
 
+    selected_piece = game_board.board[request.selected_piece[0]][request.selected_piece[1]]
 
-    
+    if selected_piece is None:
+        logger.info(f"Selected piece is None at {request.selected_piece}")
+        return
+
+    move_result = selected_piece.move(request.new_position)
+
     response = move_response(
         URL=request.URL,
         sender=request.sender,
-        move_result= selected_piece.move(request.new_position)
+        move_result=move_result
     )
     broadcast(response, reciever_list)
 
-    if response.move_result.startswith("checkmate"):
-        finish_game_service(sender_player.color, "black" if sender_player.color == "white" else "white" ,response.move_result)
+    if move_result.startswith("checkmate"):
+        finish_game_service(sender_player.color, "black" if sender_player.color == "white" else "white", move_result)
         return
+
 
     turn_change_service()
 

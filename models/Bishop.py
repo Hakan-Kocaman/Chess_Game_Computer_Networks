@@ -13,7 +13,7 @@ class Bishop(ChessPiece):
         self.move_pattern = [(1, 1), (1, -1), (-1, 1), (-1, -1)]  # Fil çapraz hareket eder
     
     def get_possible_moves(self):
-        from GameBoard import game_board
+        from models.GameBoard import game_board
         self.possible_moves= []
         for dx, dy in self.move_pattern:
             for step in range(1, 8):

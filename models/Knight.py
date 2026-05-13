@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(__file__)) 
 
-from ChessPiece import ChessPiece
+from models.ChessPiece import ChessPiece
 
 
 
@@ -14,7 +14,7 @@ class Knight(ChessPiece):
         self.move_pattern = [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2)]  # Atın hareket paterni
 
     def get_possible_moves(self):
-        from GameBoard import game_board
+        from models.GameBoard import game_board
         self.possible_moves = []
         for dx, dy in self.move_pattern:
             for step in range(1, 8):

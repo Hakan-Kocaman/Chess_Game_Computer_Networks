@@ -10,12 +10,12 @@ class GameBoard:
         
     def init_pieces(self):
         # Initialize pawns
-        from Bishop import Bishop
-        from King import King
-        from Knight import Knight
-        from Pawn import Pawn
-        from Queen import Queen
-        from Rook import Rook
+        from models.Bishop import Bishop
+        from models.King import King
+        from models.Knight import Knight
+        from models.Pawn import Pawn
+        from models.Queen import Queen
+        from models.Rook import Rook
 
         for i in range(8):
            self.board[1][i] = Pawn("black", (1, i))

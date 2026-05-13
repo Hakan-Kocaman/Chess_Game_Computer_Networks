@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.dirname(__file__)) 
 
     # Piyon Class
-from ChessPiece import ChessPiece
+from models.ChessPiece import ChessPiece
 
 
 
@@ -20,7 +20,7 @@ class Pawn(ChessPiece):
 
     
     def get_possible_moves(self):
-        from GameBoard import game_board
+        from models.GameBoard import game_board
 
         pattern=None
         if not self.first_move:

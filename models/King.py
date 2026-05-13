@@ -4,12 +4,12 @@ sys.path.append(os.path.dirname(__file__))
 
 
     # Şah Class
-from ChessPiece import ChessPiece
-from Queen import Queen
-from Bishop import Bishop
-from Rook import Rook
-from Knight import Knight
-from Pawn import Pawn
+from models.ChessPiece import ChessPiece
+from models.Queen import Queen
+from models.Bishop import Bishop
+from models.Rook import Rook
+from models.Knight import Knight
+from models.Pawn import Pawn
 
 
 
@@ -20,7 +20,7 @@ class King(ChessPiece):
         self.move_pattern = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1), (-1, -1)]  # Şah hem düz hem çapraz hareket eder
     
     def get_possible_moves(self):
-        from GameBoard import game_board
+        from models.GameBoard import game_board
         self.possible_moves = []
         for dx, dy in self.move_pattern:
             for step in range(1, 8):

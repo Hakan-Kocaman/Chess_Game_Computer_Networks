@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(__file__)) 
     # Kale Class
-from ChessPiece import ChessPiece
+from models.ChessPiece import ChessPiece
 
 
 
@@ -12,7 +12,7 @@ class Rook(ChessPiece):
         self.move_pattern = [(1, 0), (-1, 0), (0, 1), (0, -1)]  # Kale düz hareket eder
     
     def get_possible_moves(self):
-        from GameBoard import game_board
+        from models.GameBoard import game_board
         self.possible_moves = []
         for dx, dy in self.move_pattern:
             for step in range(1, 8):

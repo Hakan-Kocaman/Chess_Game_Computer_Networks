@@ -15,9 +15,9 @@ class ChessPiece(ABC):
     def get_possible_moves(self):
         pass
     def move(self, new_position):
-        from Pawn import Pawn
-        from King import King
-        from GameBoard import game_board
+        from models.Pawn import Pawn
+        from models.King import King
+        from models.GameBoard import game_board
         possible_moves = self.get_possible_moves()
         move_result = "unsuccessful move"
         pos_title=None
