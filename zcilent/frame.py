@@ -5,7 +5,7 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIcon, Qt
 from PySide6.QtCore import Signal, QObject
 
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 
@@ -64,21 +64,21 @@ class Frame(QObject):
         piece_order = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
         self.piece_icons = {
         # White Taşlar
-        "♜": "chess_pieces_pngs/white-rook.png",
-        "♞": "chess_pieces_pngs/white-knight.png",
-        "♝": "chess_pieces_pngs/white-bishop.png",
-        "♛": "chess_pieces_pngs/white-queen.png",
-        "♚": "chess_pieces_pngs/white-king.png",
-        "♟": "chess_pieces_pngs/white-pawn.png",
+        "♜": os.path.join(BASE_DIR, "chess_pieces_pngs", "black-rook.png"),
+        "♞": os.path.join(BASE_DIR, "chess_pieces_pngs", "black-knight.png"),
+        "♝": os.path.join(BASE_DIR, "chess_pieces_pngs", "black-bishop.png"),
+        "♛": os.path.join(BASE_DIR, "chess_pieces_pngs", "black-queen.png"),
+        "♚": os.path.join(BASE_DIR, "chess_pieces_pngs", "black-king.png"),
+        "♟": os.path.join(BASE_DIR, "chess_pieces_pngs", "black-pawn.png"),
         
         # Black Taşlar
-        "♖": "chess_pieces_pngs/black-rook.png",
-        "♘": "chess_pieces_pngs/black-knight.png",
-        "♗": "chess_pieces_pngs/black-bishop.png",
-        "♕": "chess_pieces_pngs/black-queen.png",
-        "♔": "chess_pieces_pngs/black-king.png",
-        "♙": "chess_pieces_pngs/black-pawn.png",
-        
+        "♖": os.path.join(BASE_DIR, "chess_pieces_pngs", "white-rook.png"),
+        "♘": os.path.join(BASE_DIR, "chess_pieces_pngs", "white-knight.png"),
+        "♗": os.path.join(BASE_DIR, "chess_pieces_pngs", "white-bishop.png"),
+        "♕": os.path.join(BASE_DIR, "chess_pieces_pngs", "white-queen.png"),
+        "♔": os.path.join(BASE_DIR, "chess_pieces_pngs", "white-king.png"),
+        "♙": os.path.join(BASE_DIR, "chess_pieces_pngs", "white-pawn.png"),
+
         # Boş Kare
         "·": None, 
         ".": None
@@ -440,12 +440,28 @@ class Frame(QObject):
         if player_color=="white":
             row = self.table_widget.rowCount()
             self.table_widget.insertRow(row)
-            self.set_cell_text(row=row, column=0, text=f"{row + 1}.", color=Qt.GlobalColor.gray)
-            self.set_cell_text(row=row, column=1, text=notation)
-            self.set_cell_text(row=row, column=2, text="")
+            # no sutunu icin
+            item_no = QTableWidgetItem(f"{row + 1}.")
+            item_no.setTextAlignment(Qt.AlignmentFlag.AlignCenter) # Ortala
+            item_no.setForeground(Qt.GlobalColor.gray)            # Gri renk yap
+            self.table_widget.setItem(row, 0, item_no)
+
+            # white sutunu icin
+            item_white = QTableWidgetItem(notation)
+            item_white.setTextAlignment(Qt.AlignmentFlag.AlignCenter) 
+            item_white.setForeground(Qt.GlobalColor.white)           
+            self.table_widget.setItem(row, 1, item_white)
+            
+            # black sutunu bos birakir
+            self.table_widget.setItem(row, 2, QTableWidgetItem(""))
         else:
             row = self.table_widget.rowCount() - 1
-            self.set_cell_text(row=row, column=2, text=notation)
+            if row >= 0:
+                # Siyahın Hamlesi
+                item_black = QTableWidgetItem(notation)
+                item_black.setTextAlignment(Qt.AlignmentFlag.AlignCenter) 
+                item_black.setForeground(Qt.GlobalColor.white)           
+                self.table_widget.setItem(row, 2, item_black)
 
 
         self.table_widget.scrollToBottom()
