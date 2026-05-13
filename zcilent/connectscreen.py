@@ -76,7 +76,7 @@ class Connect:
                 
                 
                 #Serverdan onay (initial packet) cevabi bekleniyor
-                received_pickle=self.socket.recv(1024)
+                received_pickle=self.socket.recv(4096)
                 server_response=pickle.loads(received_pickle)
                 if server_response["URL"] == "initial":
                     print("[CLIENT] Erişim onaylandi! Tahtaya geçiliyor...")

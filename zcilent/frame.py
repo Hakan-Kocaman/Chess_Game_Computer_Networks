@@ -337,6 +337,9 @@ class Frame(QObject):
         if piece is not None:
             self.buttons[newx][newy].setIcon(QIcon(self.piece_icons[piece]))
 
+        self.server_game_board[newx][newy] = self.server_game_board[oldx][oldy]
+        self.server_game_board[oldx][oldy] = "."
+
         
 
 
@@ -354,7 +357,7 @@ class Frame(QObject):
     # şah olan rengi bul, kendi rengimle karşılaştır
             checked_color = parts[5] if len(parts) > 5 else None
             if checked_color == self.my_color:
-                QMessageBox.warning(...)
+                QMessageBox.warning(self.window, "Check", "You have been checked")
             for row in range(8):
                 for col in range(8):
                     if self.my_color=="white":
@@ -387,6 +390,8 @@ class Frame(QObject):
         if piece is not None:
             self.buttons[newx][newy].setIcon(QIcon(self.piece_icons[piece]))
 
+        self.server_game_board[newx][newy] = self.server_game_board[oldx][oldy]
+        self.server_game_board[oldx][oldy] = "."
 
 
 
