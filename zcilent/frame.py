@@ -1,8 +1,8 @@
 import os
 import sys
-from PySide6.QtWidgets import QApplication, QLineEdit, QMessageBox, QPushButton
+from PySide6.QtWidgets import QApplication, QHeaderView, QLineEdit, QMessageBox, QPushButton, QTableWidgetItem
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, Qt
 from PySide6.QtCore import Signal, QObject
 
 
@@ -14,6 +14,8 @@ class Frame(QObject):
     move_signal = Signal(int, int, int, int)
     possible_moves_signal = Signal(int, int)
     chat_signal=Signal(str)
+    replay_signal=Signal()
+    stackwidget_signal=Signal()
 
 
 
@@ -25,6 +27,16 @@ class Frame(QObject):
 
         self.window = loader.load(ui_path)
 
+        self.table_widget=self.window.tableWidget
+        self.table_widget.setColumnCount(3)
+        self.table_widget.setHorizontalHeaderLabels(["#", "White", "Black"])
+        header = self.table_widget.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Interactive)
+        self.table_widget.setColumnWidth(0, 40)
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
+        header.setStretchLastSection(False)
+
         self.my_color=None
         self.id=None
         self.myturn=False
@@ -35,6 +47,7 @@ class Frame(QObject):
         self.buttons=[]
         self.playedbuttons=[]
         self.last_higlighted_buttons=[]
+        self.notations_mem=[]
         self.last_white_king_btn=None
         self.last_black_king_btn=None
         
@@ -328,7 +341,7 @@ class Frame(QObject):
             self.remove_border(self.last_black_king_btn)
 
         
-        
+        self.handle_table_widget(oldx,oldy,newx,newy,parts[0])
 
         oldbutton=self.buttons[oldx][oldy]
         newbutton=self.buttons[newx][newy]
@@ -353,15 +366,9 @@ class Frame(QObject):
         oldy = int(parts[2])
         newx = int(parts[3])
         newy = int(parts[4])
-
-        self.server_game_board[newx][newy] = self.server_game_board[oldx][oldy]
-        self.server_game_board[oldx][oldy] = "."
-
-        if parts[0] == "check":
-    # şah olan rengi bul, kendi rengimle karşılaştır
-            checked_color = parts[5] if len(parts) > 5 else None
-            if checked_color == self.my_color:
-                QMessageBox.warning(self.window, "Check", "You have been checked")
+        self.handle_table_widget(oldx,oldy,newx,newy,parts[0])
+        if self.myturn==False and parts[0]=="check":
+            QMessageBox.warning(self.window, "Check", "You have been checked")
             for row in range(8):
                 for col in range(8):
                     if self.my_color=="black":
@@ -373,17 +380,16 @@ class Frame(QObject):
                             self.last_black_king_btn=self.buttons[row][col]
                             self.put_border(self.last_black_king_btn)
         if self.myturn==False and parts[0]=="checkmate":
-            QMessageBox.warning(self.window, "Checkmate", "Game over")
-            for row in range(8):
-                for col in range(8):
-                    if self.my_color=="black":
-                        if self.server_game_board[row][col]=="♔":
-                            self.last_white_king_btn=self.buttons[row][col]
-                            self.put_border(self.last_white_king_btn)
-                    if self.my_color=="white":
-                        if self.server_game_board[row][col]=="♚":
-                            self.last_black_king_btn=self.buttons[row][col]
-                            self.put_border(self.last_black_king_btn)
+            checkmate_box=QMessageBox.warning(self.window, "Checkmate", "Game over")
+            play_again_button=checkmate_box.addButton("Play again", QMessageBox.YesRole)
+            exit_button=checkmate_box.addButton("Exit", QMessageBox.NoRole)
+            checkmate_box.exec()
+            if checkmate_box.clickedButton()==play_again_button:
+                self.reset_all()
+                self.replay_signal.emit()
+            if checkmate_box.clickedButton()==exit_button:
+                self.reset_all()
+                self.stackwidget_signal.emit()
         oldbutton=self.buttons[oldx][oldy]
         newbutton=self.buttons[newx][newy]
 
@@ -396,8 +402,69 @@ class Frame(QObject):
 
 
 
+    def handle_table_widget(self,oldx,oldy,newx,newy,state):
+        player_color = None
+
+        piece = self.buttons[oldx][oldy].property("piece")
+        if not piece:
+            return ""
+        if piece in ["♖","♘","♗","♕","♔","♙"]:
+            player_color = "white"
+        else:
+            player_color = "black"
+        
 
 
+        if piece == "♙" or piece == "♟":
+            if state == "capture":
+                notation = f"{self.row_dict.get(oldy)}x{self.row_dict.get(newy)}{str(8 - int(newx))}"
+            else:
+                notation = f"{self.row_dict.get(newy)}{str(8 - int(newx))}"
+
+        
+        else:
+            
+            notation = f"{piece}{self.row_dict.get(newy)}{8 - newx}"
+            if state=="capture":
+                notation = f"{piece}x{self.row_dict.get(newy)}{8 - newx}"
+            else:
+                notation = f"{piece}{self.row_dict.get(newy)}{8 - newx}"
+            
+        if state=="check":
+                notation += "+"
+        if state=="checkmate":
+                notation += "#"
+        
+        
+        self.notations_mem.append(notation)
+        if player_color=="white":
+            row = self.table_widget.rowCount()
+            self.table_widget.insertRow(row)
+            self.set_cell_text(row=row, column=0, text=f"{row + 1}.", color=Qt.GlobalColor.gray)
+            self.set_cell_text(row=row, column=1, text=notation)
+            self.set_cell_text(row=row, column=2, text="")
+        else:
+            row = self.table_widget.rowCount() - 1
+            self.set_cell_text(row=row, column=2, text=notation)
+
+
+        self.table_widget.scrollToBottom()
+
+    def reset_all(self):
+        self.my_color=None
+        self.id=None
+        self.myturn=False
+        self.selected_button=None
+
+        self.starter_board=[]
+        self.server_game_board=[]
+        self.buttons=[]
+        self.playedbuttons=[]
+        self.last_higlighted_buttons=[]
+        self.last_white_king_btn=None
+        self.last_black_king_btn=None
+
+        self.table_widget.setRowCount(0)
 
 
     def chat_on_click(self):
