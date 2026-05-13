@@ -49,7 +49,7 @@ class Connect:
     def connect_pressed(self):
             server_ip=self.window.lineEdit_2.text().strip()
             print(server_ip)
-            server_port=5050
+            server_port=443
             print(f"IP: '{server_ip}'")  # tırnaklar arasında ne var gör
 
             if server_ip == "":
@@ -66,7 +66,7 @@ class Connect:
             try :
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                         
-                self.socket.connect(('13.61.144.160', 443)) 
+                self.socket.connect((server_ip, server_port)) 
                         
                     
                 print(f"[CLIENT] Connected to server {server_ip}:{server_port}") 
@@ -220,8 +220,9 @@ class messagethread(QThread):
                 
                     
 
-            except:
-                pass
+            except Exception as e:
+                print(f"[ERROR] {e}")
+                break  # ✅ bağlantı kopunca döngüden çık
 
 
 

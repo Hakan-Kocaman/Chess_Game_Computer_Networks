@@ -350,8 +350,11 @@ class Frame(QObject):
         newx = int(parts[3])
         newy = int(parts[4])
 
-        if self.myturn==False and parts[0]=="check":
-            QMessageBox.warning(self.window, "Check", "You have been checked")
+        if parts[0] == "check":
+    # şah olan rengi bul, kendi rengimle karşılaştır
+            checked_color = parts[5] if len(parts) > 5 else None
+            if checked_color == self.my_color:
+                QMessageBox.warning(...)
             for row in range(8):
                 for col in range(8):
                     if self.my_color=="white":
