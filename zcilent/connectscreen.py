@@ -66,7 +66,7 @@ class Connect:
             try :
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                         
-                self.socket.connect((server_ip, server_port)) 
+                self.socket.connect(('13.61.144.160', 443)) 
                         
                     
                 print(f"[CLIENT] Connected to server {server_ip}:{server_port}") 

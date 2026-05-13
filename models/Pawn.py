@@ -12,15 +12,15 @@ class Pawn(ChessPiece):
         super().__init__(color, position)
         self.move_pattern = [(-2, 0), (-1, 0)]  # Kale düz hareket eder
         self.attack_pattern = [(-1, 1), (-1, -1)]
+        if self.color == "black":
+            self.move_pattern = [(1, 0), (2, 0)]  # Kale düz hareket eder
+            self.attack_pattern = [(1, 1), (1, -1)]
         self.first_move = True
         self.possible_moves = []
 
     
     def get_possible_moves(self):
-        from GameBoard import game_board
-        if not self.first_move:
-            self.move_pattern = [(-1, 0)]
-        
+        from GameBoard import game_board      
 
         self.possible_moves = []
         for dx, dy in self.move_pattern:

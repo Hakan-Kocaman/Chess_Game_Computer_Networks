@@ -100,7 +100,7 @@ class Frame(QObject):
                 btn.setProperty("col",j)
                 val_x = btn.property("row")
                 val_y = btn.property("col")
-                print(f"set:{i},{j} → get:{val_x},{val_y}")
+                print(f"set:{i},{j} -> get:{val_x},{val_y}")
                 btn.setProperty("notation",f"{self.row_dict.get(j)}{8 - i}")
                 
                 btn.setText("")                                                 #Isimleri kaldir
