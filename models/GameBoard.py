@@ -18,34 +18,34 @@ class GameBoard:
         from Rook import Rook
 
         for i in range(8):
-           self.board[1][i] = Pawn("white", (1, i))
-           self.board[6][i] = Pawn("black", (6, i))
+           self.board[1][i] = Pawn("black", (1, i))
+           self.board[6][i] = Pawn("white", (6, i))
         
         # Initialize rooks
-        self.board[0][0] = Rook("white", (0, 0))
-        self.board[0][7] = Rook("white", (0, 7))
-        self.board[7][0] = Rook("black", (7, 0))
-        self.board[7][7] = Rook("black", (7, 7))
+        self.board[0][0] = Rook("black", (0, 0))
+        self.board[0][7] = Rook("black", (0, 7))
+        self.board[7][0] = Rook("white", (7, 0))
+        self.board[7][7] = Rook("white", (7, 7))
         
         # Initialize knights
-        self.board[0][1] = Knight("white", (0, 1))
-        self.board[0][6] = Knight("white", (0, 6))
-        self.board[7][1] = Knight("black", (7, 1))
-        self.board[7][6] = Knight("black", (7, 6))
+        self.board[0][1] = Knight("black", (0, 1))
+        self.board[0][6] = Knight("black", (0, 6))
+        self.board[7][1] = Knight("white", (7, 1))
+        self.board[7][6] = Knight("white", (7, 6))
         
         # Initialize bishops
-        self.board[0][2] = Bishop("white", (0, 2))
-        self.board[0][5] = Bishop("white", (0, 5))
-        self.board[7][2] = Bishop("black", (7, 2))
-        self.board[7][5] = Bishop("black", (7, 5))
+        self.board[0][2] = Bishop("black", (0, 2))
+        self.board[0][5] = Bishop("black", (0, 5))
+        self.board[7][2] = Bishop("white", (7, 2))
+        self.board[7][5] = Bishop("white", (7, 5))
         
         # Initialize queens
-        self.board[0][3] = Queen("white", (0, 3))
-        self.board[7][3] = Queen("black", (7, 3))
+        self.board[0][3] = Queen("black", (0, 3))
+        self.board[7][3] = Queen("white", (7, 3))
         
         # Initialize kings
-        self.board[0][4] = King("white", (0, 4))
-        self.board[7][4] = King("black", (7, 4))
+        self.board[0][4] = King("black", (0, 4))
+        self.board[7][4] = King("white", (7, 4))
 
 
 
