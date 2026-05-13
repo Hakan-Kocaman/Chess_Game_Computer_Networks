@@ -15,6 +15,7 @@ class ChessPiece(ABC):
     def get_possible_moves(self):
         pass
     def move(self, new_position):
+        from Pawn import Pawn
         from King import King
         from GameBoard import game_board
         possible_moves = self.get_possible_moves()
@@ -25,10 +26,10 @@ class ChessPiece(ABC):
 
         if new_position in possible_moves:
             pos_title = f"{self.position[0]},{self.position[1]},{new_position[0]},{new_position[1]}"
-            move_result = "move,"+pos_title
+            move_result = "move,"+pos_title+","+self.color
             if game_board.board[new_position[0]][new_position[1]] is not None:
                 # Taş yeniyor, tahtadan kaldır
-                move_result = "capture,"+pos_title
+                move_result = "capture,"+pos_title+","+self.color
                 game_board.board[new_position[0]][new_position[1]].die()
                 
             game_board.board[self.position[0]][self.position[1]] = None
@@ -43,12 +44,14 @@ class ChessPiece(ABC):
                     if isinstance(chesspiece, King) and chesspiece.color != self.color:
                         found_king=True
                         if chesspiece.position in possible_moves: # şah kontrolü
-                            move_result = "check,"+pos_title
+                            move_result = "check,"+pos_title+","+self.color
                             if chesspiece.get_possible_moves() == []: # mat kontrolü
-                                move_result = "checkmate,"+pos_title
+                                move_result = "checkmate,"+pos_title+","+self.color
                         break
                 if found_king:
                     break
+        if isinstance(self, Pawn):
+            self.first_move = False
         # cases
         # move_result = "unsuccessful move"
         # pos_title = "from_x,from_y,to_x,to_y"
