@@ -22,13 +22,15 @@ class Pawn(ChessPiece):
     def get_possible_moves(self):
         from GameBoard import game_board
 
+        pattern=None
         if not self.first_move:
-            self.move_pattern = [self.move_pattern[1]]  # sadece 1 kare
+            pattern = [self.move_pattern[-1]]  # sadece 1 kare, kalıcı değil
         else:
-            self.move_pattern = self.move_pattern      
+            pattern = self.move_pattern
+      
 
         self.possible_moves = []
-        for dx, dy in self.move_pattern:
+        for dx, dy in pattern:
             for step in range(1, 8):
                 nx = self.position[0] + dx * step
                 ny = self.position[1] + dy * step

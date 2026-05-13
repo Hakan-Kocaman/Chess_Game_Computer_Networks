@@ -317,6 +317,9 @@ class Frame(QObject):
         newx = int(parts[3])
         newy = int(parts[4])
 
+        self.server_game_board[newx][newy] = self.server_game_board[oldx][oldy]
+        self.server_game_board[oldx][oldy] = "."
+
         print(f"updateboardcontrol{oldx},{oldy},{newx},{newy}")
         
         if self.last_white_king_btn is not None:
@@ -337,8 +340,6 @@ class Frame(QObject):
         if piece is not None:
             self.buttons[newx][newy].setIcon(QIcon(self.piece_icons[piece]))
 
-        self.server_game_board[newx][newy] = self.server_game_board[oldx][oldy]
-        self.server_game_board[oldx][oldy] = "."
 
         
 
@@ -352,6 +353,9 @@ class Frame(QObject):
         oldy = int(parts[2])
         newx = int(parts[3])
         newy = int(parts[4])
+
+        self.server_game_board[newx][newy] = self.server_game_board[oldx][oldy]
+        self.server_game_board[oldx][oldy] = "."
 
         if parts[0] == "check":
     # şah olan rengi bul, kendi rengimle karşılaştır
@@ -390,8 +394,7 @@ class Frame(QObject):
         if piece is not None:
             self.buttons[newx][newy].setIcon(QIcon(self.piece_icons[piece]))
 
-        self.server_game_board[newx][newy] = self.server_game_board[oldx][oldy]
-        self.server_game_board[oldx][oldy] = "."
+
 
 
 
