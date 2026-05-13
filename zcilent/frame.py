@@ -50,21 +50,21 @@ class Frame(QObject):
         }
         piece_order = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
         self.piece_icons = {
-        # Siyah Taşlar
-        "♜": "chess_pieces_pngs/black-rook.png",
-        "♞": "chess_pieces_pngs/black-knight.png",
-        "♝": "chess_pieces_pngs/black-bishop.png",
-        "♛": "chess_pieces_pngs/black-queen.png",
-        "♚": "chess_pieces_pngs/black-king.png",
-        "♟": "chess_pieces_pngs/black-pawn.png",
+        # White Taşlar
+        "♜": "chess_pieces_pngs/white-rook.png",
+        "♞": "chess_pieces_pngs/white-knight.png",
+        "♝": "chess_pieces_pngs/white-bishop.png",
+        "♛": "chess_pieces_pngs/white-queen.png",
+        "♚": "chess_pieces_pngs/white-king.png",
+        "♟": "chess_pieces_pngs/white-pawn.png",
         
-        # Beyaz Taşlar
-        "♖": "chess_pieces_pngs/white-rook.png",
-        "♘": "chess_pieces_pngs/white-knight.png",
-        "♗": "chess_pieces_pngs/white-bishop.png",
-        "♕": "chess_pieces_pngs/white-queen.png",
-        "♔": "chess_pieces_pngs/white-king.png",
-        "♙": "chess_pieces_pngs/white-pawn.png",
+        # Black Taşlar
+        "♖": "chess_pieces_pngs/black-rook.png",
+        "♘": "chess_pieces_pngs/black-knight.png",
+        "♗": "chess_pieces_pngs/black-bishop.png",
+        "♕": "chess_pieces_pngs/black-queen.png",
+        "♔": "chess_pieces_pngs/black-king.png",
+        "♙": "chess_pieces_pngs/black-pawn.png",
         
         # Boş Kare
         "·": None, 
@@ -171,7 +171,7 @@ class Frame(QObject):
 
 
             #2. tiklamada bos kareye tiklamadiysa kendi baska bir tasina tikladiysa digerini sec 
-            if self.my_color=="white" and piece in ["♖","♘","♗","♕","♔","♙"]:
+            if self.my_color=="black" and piece in ["♖","♘","♗","♕","♔","♙"]:
                 self.remove_border(self.selected_button)
 
                 self.clear_highlights()
@@ -180,7 +180,7 @@ class Frame(QObject):
                 self.put_border(clicked)
                 self.get_request_possible_moves(clicked)
                 return
-            if self.my_color=="black" and piece in ["♜","♞","♝","♛","♚","♟"]:
+            if self.my_color=="white" and piece in ["♜","♞","♝","♛","♚","♟"]:
                 self.remove_border(self.selected_button)
 
                 self.clear_highlights()
@@ -364,11 +364,11 @@ class Frame(QObject):
                 QMessageBox.warning(self.window, "Check", "You have been checked")
             for row in range(8):
                 for col in range(8):
-                    if self.my_color=="white":
+                    if self.my_color=="black":
                         if self.server_game_board[row][col]=="♔":
                             self.last_white_king_btn=self.buttons[row][col]
                             self.put_border(self.last_white_king_btn)
-                    if self.my_color=="black":
+                    if self.my_color=="white":
                         if self.server_game_board[row][col]=="♚":
                             self.last_black_king_btn=self.buttons[row][col]
                             self.put_border(self.last_black_king_btn)
@@ -376,11 +376,11 @@ class Frame(QObject):
             QMessageBox.warning(self.window, "Checkmate", "Game over")
             for row in range(8):
                 for col in range(8):
-                    if self.my_color=="white":
+                    if self.my_color=="black":
                         if self.server_game_board[row][col]=="♔":
                             self.last_white_king_btn=self.buttons[row][col]
                             self.put_border(self.last_white_king_btn)
-                    if self.my_color=="black":
+                    if self.my_color=="white":
                         if self.server_game_board[row][col]=="♚":
                             self.last_black_king_btn=self.buttons[row][col]
                             self.put_border(self.last_black_king_btn)

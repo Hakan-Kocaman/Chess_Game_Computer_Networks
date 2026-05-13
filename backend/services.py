@@ -42,6 +42,7 @@ def get_possible_moves_service(request):
 
     selected_piece = request.selected_piece
     selected_piece = game_board.board[selected_piece[0]][selected_piece[1]] 
+    logger.info(f"Selected piece: {selected_piece.color} + {selected_piece.__class__.__name__} + {selected_piece.position} ")
     
     possible_moves = selected_piece.get_possible_moves()
 
@@ -62,18 +63,26 @@ def move_service(request):
     
     selected_piece = (game_board.board[request.selected_piece[0]][request.selected_piece[1]])
 
+    logger.info(f"Selected piece: {selected_piece.color} + {selected_piece.__class__.__name__} + {selected_piece.position} to {request.new_position}")
+
     if isinstance(selected_piece, Pawn):
         selected_piece = Pawn(selected_piece.color, selected_piece.position)
+        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
     elif isinstance(selected_piece, Rook):
         selected_piece = Rook(selected_piece.color, selected_piece.position)
+        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
     elif isinstance(selected_piece, Knight):
         selected_piece = Knight(selected_piece.color, selected_piece.position)
+        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
     elif isinstance(selected_piece, Bishop):
         selected_piece = Bishop(selected_piece.color, selected_piece.position)
+        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
     elif isinstance(selected_piece, Queen):
         selected_piece = Queen(selected_piece.color, selected_piece.position)
+        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
     elif isinstance(selected_piece, King):
         selected_piece = King(selected_piece.color, selected_piece.position)
+        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
 
     sender_player = None
     for player in player_list:
