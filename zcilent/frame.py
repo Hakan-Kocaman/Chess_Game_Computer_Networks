@@ -99,6 +99,18 @@ class Frame(QObject):
     def create_buttons(self,my_color,id):
         self.my_color=my_color
         self.id=id
+        opponent_label_id=""
+        opponent_label_color=""
+        if self.id==1:
+            opponent_label_id="2"
+        else:
+            opponent_label_id="1"
+        if self.my_color=="white":
+            opponent_label_color="black"
+        else:
+            opponent_label_color="white"
+        self.window.label.setText(f"Player {self.id} ({self.my_color})")
+        self.window.label_2.setText(f"Player {opponent_label_id} ({opponent_label_color})")
         if self.my_color=="white":
             self.myturn=True
         else:
@@ -129,6 +141,8 @@ class Frame(QObject):
                     self.window.gridLayout_4.addWidget(btn, 7 -i, 7 -j)
                 
                 row.append(btn)
+            self.window.gridLayout_4.setSpacing(0)
+            self.window.gridLayout_4.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
             self.buttons.append(row)
 
    

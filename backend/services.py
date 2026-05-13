@@ -51,6 +51,7 @@ def get_possible_moves_service(request):
         sender=request.sender,
         possible_moves=possible_moves
     )
+    print(f"Olasi hamleler gonderildi: {game_board.board}")
     broadcast(response, reciever_list)
 
 
@@ -66,23 +67,28 @@ def move_service(request):
     logger.info(f"Selected piece: {selected_piece.color} + {selected_piece.__class__.__name__} + {selected_piece.position} to {request.new_position}")
 
     if isinstance(selected_piece, Pawn):
-        selected_piece = Pawn(selected_piece.color, selected_piece.position)
-        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
+        selected_piece = Pawn(selected_piece.color, request.new_position)
+        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
     elif isinstance(selected_piece, Rook):
-        selected_piece = Rook(selected_piece.color, selected_piece.position)
-        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
+        selected_piece = Rook(selected_piece.color, request.new_position)
+        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
     elif isinstance(selected_piece, Knight):
-        selected_piece = Knight(selected_piece.color, selected_piece.position)
-        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
+        selected_piece = Knight(selected_piece.color, request.new_position)
+        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
     elif isinstance(selected_piece, Bishop):
-        selected_piece = Bishop(selected_piece.color, selected_piece.position)
-        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
+        selected_piece = Bishop(selected_piece.color, request.new_position)
+        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
     elif isinstance(selected_piece, Queen):
-        selected_piece = Queen(selected_piece.color, selected_piece.position)
-        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
+        selected_piece = Queen(selected_piece.color, request.new_position)
+        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
     elif isinstance(selected_piece, King):
-        selected_piece = King(selected_piece.color, selected_piece.position)
-        game_board.board[selected_piece.position[0]][selected_piece.position[1]] = selected_piece
+        selected_piece = King(selected_piece.color, request.new_position)
+        game_board.board[request.new_position[0]][request.new_position[1]] = selected_piece
+
+
+    
+    #eski konumu none yap
+    game_board.board[request.selected_piece[0]][request.selected_piece[1]] = None
 
     sender_player = None
     for player in player_list:

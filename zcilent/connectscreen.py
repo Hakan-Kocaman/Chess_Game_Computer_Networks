@@ -139,6 +139,7 @@ class Connect:
         self.socket.sendall(pickle.dumps(request))
                 
     def send_possible_moves_request(self,from_x,from_y):
+        print(f"Su konumdaki tas icin olasi hamleler istegi yollandi ({from_x},{from_y})")
         packet=get_possible_moves_request(URL="get_possible_moves",sender=self.id,selected_piece=(from_x,from_y))
         self.socket.sendall(pickle.dumps(packet))
 
@@ -213,7 +214,7 @@ class messagethread(QThread):
                                 self.turn_received.emit(False)
 
                 elif received_packet.URL=="get_possible_moves":
-                    print(received_packet.possible_moves)
+                    print(f"Olasi hamleler alindi: {received_packet.possible_moves}")
                     self.possible_moves_received.emit(received_packet.possible_moves)
 
                 elif received_packet.URL=="chat":
