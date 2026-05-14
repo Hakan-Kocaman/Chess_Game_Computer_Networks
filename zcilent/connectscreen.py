@@ -49,7 +49,7 @@ class Connect:
     def connect_pressed(self):
             server_ip=self.window.lineEdit_2.text().strip()
             print(server_ip)
-            server_port=443
+            server_port=5050
             print(f"IP: '{server_ip}'")  # tırnaklar arasında ne var gör
 
             if server_ip == "":
