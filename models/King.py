@@ -66,10 +66,10 @@ class King(ChessPiece):
                     break
                 if step == 1 and isinstance(target, King):
                     return True
-                if step == 1 and isinstance(target, Pawn):
-                    expected_dir = 1 if self.color == "white" else -1
+                if step == 1 and isinstance(target, Pawn) and target.color != self.color:
+                    expected_dir = 1 if target.color == "black" else -1  
                     if dx == expected_dir:
-                        return True
+                       return True
                     break
                 if isinstance(target, (Queen, Bishop)):
                     return True
