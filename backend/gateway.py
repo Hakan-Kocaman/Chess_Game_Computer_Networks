@@ -13,7 +13,7 @@ from logger import logger
 from dtos.client_requests import move_request,chat_request,get_possible_moves_request
 from dtos.server_responses import connection_lost_response
 from player import player_list, player_id_list
-from server import reset_server_all
+from services import reset_server_service
 
 # request= {
 #     "URL": determines the service,
@@ -82,13 +82,19 @@ def handle_client(client_socket):
         
         for player in player_list:
             try:
-                player.socket.sendall(pickle.dumps(response)) 
+                player.socket.sendall(pickle.dumps(response))
+                player.__del__()
             except Exception as e:
                 logger.error(f"Error sending connection lost response to player {player.id}: {e}")
+        
 
-    # SOKETİ KAPAT VE SUNUCUYU YENİ OYUNA HAZIRLA
-    client_socket.close()
+
     
+    
+    try:
+        reset_server_service()
+    except Exception as e:
+        logger.error(f"Server resetlenirken hata oluştu: {e}")
     
         
 

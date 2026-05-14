@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import global_variables
-from player import player_list
+from player import player_list,player_id_list
 from models.GameBoard import game_board
 from models.ChessPiece import ChessPiece
 from models.Bishop import Bishop
@@ -212,3 +212,13 @@ def broadcast(response, reciever_list):
     if reciever_list:
         for socket in reciever_list:
             socket.sendall(pickle.dumps(response))
+
+def reset_server_service():
+    global current_turn, game_state, game_states
+    global_variables.current_turn = "white"
+    global_variables.game_states = ["waiting", "game"]
+    global_variables.game_state = global_variables.game_states[0]
+    player_list.clear()
+    player_id_list.clear()  
+    player_id_list.extend(range(1, 100))
+    game_board.__init__()

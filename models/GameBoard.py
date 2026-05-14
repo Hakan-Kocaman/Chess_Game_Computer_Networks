@@ -47,6 +47,4 @@ class GameBoard:
         self.board[0][4] = King("black", (0, 4))
         self.board[7][4] = King("white", (7, 4))
 
-
-
 game_board = GameBoard()
