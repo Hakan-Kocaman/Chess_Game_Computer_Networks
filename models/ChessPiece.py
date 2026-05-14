@@ -50,8 +50,6 @@ class ChessPiece(ABC):
                         break
                 if found_king:
                     break
-        if isinstance(self, Pawn):
-            self.first_move = False
         # cases
         # move_result = "unsuccessful move"
         # pos_title = "from_x,from_y,to_x,to_y"
