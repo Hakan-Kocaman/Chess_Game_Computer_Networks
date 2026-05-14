@@ -55,8 +55,7 @@ def handle_client(client_socket):
             request = pickle.loads(data)
             # Not: Her paket için yeni thread açmak oyun anında sıra kaymalarına 
             # sebep olabilir ama şu an çalışıyorsa dokunma.
-            controller_thread = threading.Thread(target=controller_handler, args=(client_socket, request))
-            controller_thread.start()
+            controller_handler(client_socket, request)
             
         except Exception as e:
             logger.error(f"Error receiving data from client: {e}")

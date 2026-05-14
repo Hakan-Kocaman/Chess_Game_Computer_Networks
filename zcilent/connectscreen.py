@@ -260,8 +260,9 @@ class messagethread(QThread):
                 if received_packet.URL=="connection_lost":
                     self.connection_lost.emit(received_packet.who)
                     break
-                if received_packet.URL == "start_game":    # ← YENİ BLOK
+                if received_packet.URL == "start_game":   
                     self.game_started.emit()
+                    
                     
                 
                 
