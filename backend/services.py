@@ -206,6 +206,10 @@ def finish_game_service(winner,loser,result):
     )
     broadcast(response, reciever_list)
 
+    for player in player_list:
+        player.socket.close()
+    reset_server_service()
+
 
 def broadcast(response, reciever_list):
     logger.info(f"Broadcasting response for {response.URL} to {len(reciever_list)} clients.")
