@@ -81,13 +81,19 @@ def handle_client(client_socket):
             who=found_player.id
         )
         
-        for player in player_list:
-            try:
-                player.socket.sendall(pickle.dumps(response))
-                player.__del__()
-            except Exception as e:
-                logger.error(f"Error sending connection lost response to player {player.id}: {e}")
-        
+
+    for player in player_list:
+        try:
+            player.socket.sendall(pickle.dumps(response))
+        except Exception as e:
+            logger.error(f"Error sending connection lost response to player {player.id}: {e}")
+
+
+    for player in player_list:
+        try:
+            player.__del__()
+        except Exception as e:
+            logger.error(f"Error closing player socket: {e}")
 
 
     
