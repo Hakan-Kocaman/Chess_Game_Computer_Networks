@@ -31,7 +31,7 @@ class King(ChessPiece):
                     break  # tahtadan çıktı
 
                 if self.is_threatened((nx, ny)):
-                    break
+                    continue    
 
                 target = game_board.board[nx][ny]
             
@@ -46,7 +46,7 @@ class King(ChessPiece):
                     break  # kendi taşı, dur
         return self.possible_moves
     def is_threatened(self, target_position):
-        from GameBoard import game_board
+        from models.GameBoard import game_board
         linear_threats =[(0,1), (1,0), (0,-1), (-1,0)]
         for dx, dy in linear_threats:
             for step in range(1,8):
@@ -63,6 +63,8 @@ class King(ChessPiece):
                          return True
                     elif target is not None:
                         break
+                else:
+                    break
                     
         diagonal_threats =[(1,1), (1,-1), (-1,1), (-1,-1)]
         for dx, dy in diagonal_threats:
@@ -73,13 +75,19 @@ class King(ChessPiece):
                     target = game_board.board[nx][ny]
                     if target is not None and target.color == self.color:# aynı renk taş
                         break
+                    if step == 1 and isinstance(target, Pawn) and target.color != self.color:
+                        expected_dir = 1 if self.color == "white" else -1
+                        if dx == expected_dir:
+                            return True
                     if step==1:
-                        if target is not None and target.color != self.color and (isinstance(target, King) or isinstance(target, Pawn)):
+                        if target is not None and target.color != self.color and (isinstance(target, King)):
                             return True
                     if target is not None and target.color != self.color and (isinstance(target, Queen) or isinstance(target, Bishop)):
                          return True
                     elif target is not None:
                         break
+                else:
+                    break
                     
         L_shaped_threats = [(2,1),(1,2),(-1,2),(-2,1),(-2,-1),(-1,-2),(1,-2),(2,-1)]
         for dx, dy in L_shaped_threats:
@@ -93,8 +101,11 @@ class King(ChessPiece):
                         break
                     if target is not None and target.color != self.color and isinstance(target, Knight):
                          return True
+                else:
+                    break
         
         return False
     def die(self):
-        pass
+        from models.GameBoard import game_board
+        game_board.board[self.position[0]][self.position[1]] = None
 

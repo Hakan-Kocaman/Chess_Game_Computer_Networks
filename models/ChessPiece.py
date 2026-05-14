@@ -61,5 +61,5 @@ class ChessPiece(ABC):
 
 
     def die(self):
-        from GameBoard import game_board
+        from models.GameBoard import game_board
         game_board.board[self.position[0]][self.position[1]] = None
