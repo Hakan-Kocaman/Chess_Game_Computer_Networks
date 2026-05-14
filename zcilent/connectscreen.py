@@ -30,8 +30,8 @@ class Connect:
         self.stack = QStackedWidget()
         self.stack.setWindowTitle("Ag Laboratuvari - Satranc")
         self.stack.resize(800, 600)
-
         
+                
 
         self.stack.addWidget(self.window)                       #Stack yapisina iki ekran da eklendi 
         self.stack.addWidget(self.play_screen.window)
@@ -50,7 +50,7 @@ class Connect:
             server_ip=self.window.lineEdit_2.text().strip()
             print(server_ip)
             server_port=5050
-            print(f"IP: '{server_ip}'")  # tırnaklar arasında ne var gör
+            print(f"IP: '{server_ip}'") 
 
             if server_ip == "":
                 msg = QMessageBox()
@@ -60,7 +60,7 @@ class Connect:
                 msg.exec()
                 return
 
-            # Eski thread sinyallerini kes, sonra durdur
+            # Eski thread sinyallerini kes sonra durdur
             if hasattr(self, 'msg_thread'):
                 try:
                     self.msg_thread.possible_moves_received.disconnect()
@@ -75,13 +75,13 @@ class Connect:
                     self.msg_thread.quit()
                     self.msg_thread.wait(2000)
 
-            # Eski socket'i kapat
+            # Eski socketi kapat
             if hasattr(self, 'socket'):
                 try:
                     self.socket.close()
                 except Exception:
                     pass
-            # Sinyalleri bir kez bağlamak için flag
+            # Sinyalleri bir kez bağlamak için 
             if not hasattr(self, '_signals_connected'):
                 self.play_screen.move_signal.connect(self.send_move)
                 self.play_screen.possible_moves_signal.connect(self.send_possible_moves_request)
@@ -103,7 +103,7 @@ class Connect:
                             
                 
                 
-                #Serverdan onay (initial packet) cevabi bekleniyor
+                #Serverdan initial packet cevabi bekleniyor
                 received_pickle=self.socket.recv(4096)
                 server_response=pickle.loads(received_pickle)
                 if server_response["URL"] == "initial":
