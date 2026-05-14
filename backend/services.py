@@ -41,20 +41,53 @@ def get_possible_moves_service(request):
             break
 
     selected_piece = request.selected_piece
-    selected_piece = game_board.board[selected_piece[0]][selected_piece[1]] 
+    selected_piece = game_board.board[selected_piece[0]][selected_piece[1]]
+
+    if selected_piece is None:
+        return
+
     logger.info(f"Selected piece: {selected_piece.color} + {selected_piece.__class__.__name__} + {selected_piece.position} ")
-    
-    possible_moves = selected_piece.get_possible_moves()
+
+    raw_moves = selected_piece.get_possible_moves()
+
+    # Şahı bul
+    king = None
+    for row in game_board.board:
+        for piece in row:
+            if isinstance(piece, King) and piece.color == selected_piece.color:
+                king = piece
+                break
+        if king:
+            break
+
+    # Her hamleyi simüle et, şah tehdit altındaysa o hamleyi çıkar
+    legal_moves = []
+    for move in raw_moves:
+        original_pos = selected_piece.position
+        target_piece = game_board.board[move[0]][move[1]]
+
+        game_board.board[original_pos[0]][original_pos[1]] = None
+        game_board.board[move[0]][move[1]] = selected_piece
+        selected_piece.position = move
+
+        still_in_check = king.is_threatened(king.position)
+
+        # Geri al
+        game_board.board[move[0]][move[1]] = target_piece
+        game_board.board[original_pos[0]][original_pos[1]] = selected_piece
+        selected_piece.position = original_pos
+
+        if not still_in_check:
+            legal_moves.append(move)
 
     response = get_possible_moves_response(
         URL=request.URL,
         sender=request.sender,
-        possible_moves=possible_moves
+        possible_moves=legal_moves
     )
-    print(f"Olasi hamleler gonderildi: {game_board.board}")
+    logger.info(f"Olasi hamleler gonderildi: {legal_moves}")
     broadcast(response, reciever_list)
-
-
+    
 def move_service(request):
 
     reciever_list = []
