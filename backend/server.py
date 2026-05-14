@@ -2,10 +2,11 @@ import threading
 import pickle
 from services import start_game_service
 import gateway as gateway
-from player import player, player_list
+from player import player, player_list,player_id_list
 import socket_manager
 from logger import logger
 import global_variables
+from models.GameBoard import game_board
 
 
 
@@ -53,6 +54,18 @@ def handle_player_connection(new_player):
     except Exception as e:
         logger.error(f"Error starting controller thread for {new_player.get_name()}: {e}")
 
+
+def reset_server_all():
+    global current_turn, game_state, game_states
+    global_variables.current_turn = "white"
+    global_variables.game_states = ["waiting", "game"]
+    global_variables.game_state = global_variables.game_states[0]
+    player_list.clear()
+    player_id_list.clear()
+    player_id_list.extend(range(1, 99))  
+    game_board.__init__()
+
+    
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 
 import sys
 import os
+
+from backend import server
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import threading
@@ -9,7 +11,9 @@ import socket_manager
 import controllers
 from logger import logger
 from dtos.client_requests import move_request,chat_request,get_possible_moves_request
-
+from dtos.server_responses import connection_lost_response
+from player import player_list, player_id_list
+from server import reset_server_all
 
 # request= {
 #     "URL": determines the service,
@@ -42,11 +46,57 @@ def controller_handler(client_socket, request):
 
 def handle_client(client_socket):
     while True:
-        data = client_socket.recv(4096)
-        request = pickle.loads(data)
+        try:
+            data = client_socket.recv(4096)
+            if not data:
+                logger.info("Client disconnected")
+                break
+            
+            request = pickle.loads(data)
+            # Not: Her paket için yeni thread açmak oyun anında sıra kaymalarına 
+            # sebep olabilir ama şu an çalışıyorsa dokunma.
+            controller_thread = threading.Thread(target=controller_handler, args=(client_socket, request))
+            controller_thread.start()
+            
+        except Exception as e:
+            logger.error(f"Error receiving data from client: {e}")
+            break
 
-        controller_thread=threading.Thread(target=controller_handler, args=(client_socket, request))
-        controller_thread.start()
+    
+    
+    found_player = None
+    for p in player_list:
+        if p.socket == client_socket:
+            found_player = p
+            player_list.remove(p)
+            player_id_list.append(p.id) 
+            break
+            
+    
+    if found_player is not None:
+        response = connection_lost_response(
+            URL="connection_lost",
+            sender=None,
+            who=found_player.id
+        )
+        
+        for player in player_list:
+            try:
+                player.socket.sendall(pickle.dumps(response)) 
+            except Exception as e:
+                logger.error(f"Error sending connection lost response to player {player.id}: {e}")
+
+    # SOKETİ KAPAT VE SUNUCUYU YENİ OYUNA HAZIRLA
+    client_socket.close()
+    
+    try:
+        server.reset_server_all()
+    except Exception as e:
+        logger.error(f"Server resetlenirken hata oluştu: {e}")
+    
+        
+
+        
 
 
 
