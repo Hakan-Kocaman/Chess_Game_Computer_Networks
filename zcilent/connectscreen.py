@@ -60,7 +60,25 @@ class Connect:
                 msg.exec()
                 return
 
-            
+              # Eski thread'i durdur
+            if hasattr(self, 'msg_thread') and self.msg_thread.isRunning():
+                self.msg_thread.quit()
+                self.msg_thread.wait()
+
+            # Eski socket'i kapat
+            if hasattr(self, 'socket'):
+                try:
+                    self.socket.close()
+                except:
+                    pass
+            # Sinyalleri bir kez bağlamak için flag
+            if not hasattr(self, '_signals_connected'):
+                self.play_screen.move_signal.connect(self.send_move)
+                self.play_screen.possible_moves_signal.connect(self.send_possible_moves_request)
+                self.play_screen.chat_signal.connect(self.send_chat)
+                self.play_screen.stackwidget_signal.connect(lambda: self.stack.setCurrentIndex(0))
+                self.play_screen.replay_signal.connect(self.connect_pressed)
+                self._signals_connected = True
             
             
             try :
@@ -104,6 +122,7 @@ class Connect:
                     self.msg_thread.turn_received.connect(self.play_screen.handle_turn)
                     self.msg_thread.chat_received.connect(self.play_screen.handle_chat)
                     self.msg_thread.check_received.connect(self.play_screen.update_board_with_check)
+                    self.msg_thread.connection_lost.connect(self.connection_lost)
                     self.msg_thread.start()
                                     ###############
 
@@ -146,6 +165,13 @@ class Connect:
     def send_chat(self,message_content):
         packet=chat_request(URL="chat",sender= "Player "+str(self.id),message=message_content)
         self.socket.sendall(pickle.dumps(packet))
+
+    def connection_lost(self,who_id):
+        QMessageBox.warning(self.window, "Connection Lost", f"Player {who_id} disconnected.")
+        self.play_screen.reset_all()
+        self.stack.setCurrentIndex(0)
+        
+        
             
 
                 
@@ -162,6 +188,7 @@ class messagethread(QThread):
     turn_received=Signal(bool)
     chat_received=Signal(str,str)
     check_received=Signal(str)
+    connection_lost=Signal(int)
 
     
     def __init__(self, socket,id):
@@ -219,13 +246,18 @@ class messagethread(QThread):
 
                 elif received_packet.URL=="chat":
                     self.chat_received.emit(received_packet.sender,received_packet.message)
+
+                elif received_packet.URL=="connection_lost":
+                    self.connection_lost.emit(received_packet.who)
+                    break
+                    
                 
                 
                     
 
             except Exception as e:
                 print(f"[ERROR] {e}")
-                break  # ✅ bağlantı kopunca döngüden çık
+                break  
 
 
 

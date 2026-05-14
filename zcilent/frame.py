@@ -16,6 +16,7 @@ class Frame(QObject):
     chat_signal=Signal(str)
     replay_signal=Signal()
     stackwidget_signal=Signal()
+    
 
 
 
@@ -97,6 +98,12 @@ class Frame(QObject):
        
         
     def create_buttons(self,my_color,id):
+        while self.window.gridLayout_4.count():
+            item = self.window.gridLayout_4.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+        self.buttons = []
         self.my_color=my_color
         self.id=id
         opponent_label_id=""
@@ -508,6 +515,7 @@ class Frame(QObject):
         self.last_higlighted_buttons=[]
         self.last_white_king_btn=None
         self.last_black_king_btn=None
+        self.line_edit.clear()
 
         self.table_widget.setRowCount(0)
 

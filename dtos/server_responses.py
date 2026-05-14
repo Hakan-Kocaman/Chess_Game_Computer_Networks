@@ -44,3 +44,9 @@ class finish_game_response(response):
         self.winner = winner
         self.loser = loser
         self.result = result
+
+
+class connection_lost_response(response):
+    def __init__(self, URL, sender, who):
+        super().__init__(URL, sender)
+        self.who = who
