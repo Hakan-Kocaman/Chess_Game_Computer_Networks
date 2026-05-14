@@ -37,9 +37,6 @@ class ChessPiece(ABC):
             self.position = new_position
             game_board.board[self.position[0]][self.position[1]] = self
 
-            if isinstance(self, Pawn):
-                self.first_move = False
-
             possible_moves = self.get_possible_moves()
 
             found_king = False
@@ -66,17 +63,16 @@ class ChessPiece(ABC):
     def is_checkmate(self, king):
         from models.GameBoard import game_board
 
-        # Şahın hamlesi varsa mat değil
+        # Şahın tehdit altında olmayan hamlesi varsa mat değil
         if king.get_possible_moves():
             return False
 
-        # Dost taşlardan biri şahı kurtarabilir mi?
+        # bir taş şahı kurtarabilir mi???
         for row in game_board.board:
             for piece in row:
                 if piece is None or piece.color != king.color or piece is king:
                     continue
                 for move in piece.get_possible_moves():
-                    # Hamleyi simüle et
                     original_pos = piece.position
                     target_piece = game_board.board[move[0]][move[1]]
 
@@ -86,16 +82,16 @@ class ChessPiece(ABC):
 
                     still_in_check = king.is_threatened(king.position)
 
-                    # Geri al
                     game_board.board[move[0]][move[1]] = target_piece
                     game_board.board[original_pos[0]][original_pos[1]] = piece
                     piece.position = original_pos
 
                     if not still_in_check:
-                        return False  # Bu hamle şahı kurtarıyor
+                        return False
 
-        return True  # Hiçbir şey şahı kurtaramıyor → mat
-
+        return True
+    
     def die(self):
         from models.GameBoard import game_board
+
         game_board.board[self.position[0]][self.position[1]] = None

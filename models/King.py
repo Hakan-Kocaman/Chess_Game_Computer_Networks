@@ -68,7 +68,7 @@ class King(ChessPiece):
                     return True
                 if step == 1 and isinstance(target, Pawn) and target.color != self.color:
                     expected_dir = 1 if target.color == "black" else -1  
-                    if dx == expected_dir:
+                    if -dx == expected_dir:
                        return True
                     break
                 if isinstance(target, (Queen, Bishop)):
@@ -88,6 +88,3 @@ class King(ChessPiece):
 
         return False
 
-    def die(self):
-        from models.GameBoard import game_board
-        game_board.board[self.position[0]][self.position[1]] = None

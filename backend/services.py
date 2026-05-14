@@ -50,7 +50,7 @@ def get_possible_moves_service(request):
 
     raw_moves = selected_piece.get_possible_moves()
 
-    # Şahı bul
+    # Şah
     king = None
     for row in game_board.board:
         for piece in row:
@@ -60,7 +60,7 @@ def get_possible_moves_service(request):
         if king:
             break
 
-    # Her hamleyi simüle et, şah tehdit altındaysa o hamleyi çıkar
+    #  şah tehditdeyse o hamleyi çıkar
     legal_moves = []
     for move in raw_moves:
         original_pos = selected_piece.position
@@ -87,7 +87,7 @@ def get_possible_moves_service(request):
     )
     logger.info(f"Olasi hamleler gonderildi: {legal_moves}")
     broadcast(response, reciever_list)
-    
+
 def move_service(request):
 
     reciever_list = []
@@ -113,6 +113,35 @@ def move_service(request):
         logger.info(f"Selected piece is None at {request.selected_piece}")
         return
 
+    # Hamle şahı tehlikeye atıyor mu??? 
+    king = None
+    for row in game_board.board:
+        for piece in row:
+            if isinstance(piece, King) and piece.color == selected_piece.color:
+                king = piece
+                break
+        if king:
+            break
+
+    new_pos = (int(request.new_position[0]), int(request.new_position[1]))
+    original_pos = selected_piece.position
+    target_piece = game_board.board[new_pos[0]][new_pos[1]]
+
+    game_board.board[original_pos[0]][original_pos[1]] = None
+    game_board.board[new_pos[0]][new_pos[1]] = selected_piece
+    selected_piece.position = new_pos
+
+    still_in_check = king.is_threatened(king.position)
+
+    # Geri al
+    game_board.board[new_pos[0]][new_pos[1]] = target_piece
+    game_board.board[original_pos[0]][original_pos[1]] = selected_piece
+    selected_piece.position = original_pos
+
+    if still_in_check:
+        logger.info(f"Illegal move: king still in check after move")
+        return
+
     move_result = selected_piece.move(request.new_position)
 
     response = move_response(
@@ -125,7 +154,6 @@ def move_service(request):
     if move_result.startswith("checkmate"):
         finish_game_service(sender_player.color, "black" if sender_player.color == "white" else "white", move_result)
         return
-
 
     turn_change_service()
 
