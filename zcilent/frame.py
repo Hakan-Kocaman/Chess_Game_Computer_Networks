@@ -198,7 +198,7 @@ class Frame(QObject):
 
 
             #2. tiklamada bos kareye tiklamadiysa kendi baska bir tasina tikladiysa digerini sec 
-            if self.my_color=="black" and piece in ["♖","♘","♗","♕","♔","♙"]:
+            if self.my_color=="black" and piece in ["♜","♞","♝","♛","♚","♟"]:
                 self.remove_border(self.selected_button)
 
                 self.clear_highlights()
@@ -207,7 +207,7 @@ class Frame(QObject):
                 self.put_border(clicked)
                 self.get_request_possible_moves(clicked)
                 return
-            if self.my_color=="white" and piece in ["♜","♞","♝","♛","♚","♟"]:
+            if self.my_color=="white" and piece in ["♖","♘","♗","♕","♔","♙"]:
                 self.remove_border(self.selected_button)
 
                 self.clear_highlights()
@@ -222,7 +222,7 @@ class Frame(QObject):
             row=clicked.property("row")
             col=clicked.property("col")
             if (row,col) not in self.last_higlighted_buttons:
-                print("hamle yapilamadi")
+                print("hamle yapilamadi possible moves degil")
                 self.remove_border(self.selected_button)
                 self.selected_button = None
                 self.clear_highlights()
@@ -381,20 +381,35 @@ class Frame(QObject):
         newx = int(parts[3])
         newy = int(parts[4])
         self.handle_table_widget(oldx,oldy,newx,newy,parts[0])
+        self.server_game_board[newx][newy] = self.server_game_board[oldx][oldy]
+        self.server_game_board[oldx][oldy] = "."
+        
+
         if self.myturn==False and parts[0]=="check":
             QMessageBox.warning(self.window, "Check", "You have been checked")
             for row in range(8):
                 for col in range(8):
-                    if self.my_color=="black":
-                        if self.server_game_board[row][col]=="♔":
-                            self.last_white_king_btn=self.buttons[row][col]
-                            self.put_border(self.last_white_king_btn)
-                    if self.my_color=="white":
+                    if self.my_color=="black" :
                         if self.server_game_board[row][col]=="♚":
                             self.last_black_king_btn=self.buttons[row][col]
-                            self.put_border(self.last_black_king_btn)
+                            break
+                        
+                    elif self.my_color=="white" :
+                        if self.server_game_board[row][col]=="♔":
+                            self.last_white_king_btn=self.buttons[row][col]
+                            break
+                            
+            
+            
+
+            if self.my_color == "white":
+                self.put_border(self.last_white_king_btn)
+            else:
+                self.put_border(self.last_black_king_btn)
         if self.myturn==False and parts[0]=="checkmate":
-            checkmate_box=QMessageBox.warning(self.window, "Checkmate", "Game over")
+            checkmate_box = QMessageBox(self.window)
+            checkmate_box.setWindowTitle("Checkmate")
+            checkmate_box.setText("Game over")
             play_again_button=checkmate_box.addButton("Play again", QMessageBox.YesRole)
             exit_button=checkmate_box.addButton("Exit", QMessageBox.NoRole)
             checkmate_box.exec()
