@@ -99,7 +99,8 @@ def handle_client(client_socket):
     
     
     try:
-        reset_server_service()
+        if len(player_list) == 0:  # ✅ sadece herkes çıktıysa reset et
+            reset_server_service()
     except Exception as e:
         logger.error(f"Server resetlenirken hata oluştu: {e}")
     
