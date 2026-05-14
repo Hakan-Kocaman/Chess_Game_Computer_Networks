@@ -61,12 +61,14 @@ def handle_client(client_socket):
             logger.error(f"Error receiving data from client: {e}")
             break
 
+
     
     
     found_player = None
     for p in player_list:
         if p.socket == client_socket:
             found_player = p
+            client_socket.close()
             player_list.remove(p)
             player_id_list.append(p.id) 
             break
