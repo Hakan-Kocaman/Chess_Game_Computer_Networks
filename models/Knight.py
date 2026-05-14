@@ -17,7 +17,7 @@ class Knight(ChessPiece):
         from models.GameBoard import game_board
         self.possible_moves = []
         for dx, dy in self.move_pattern:
-            for step in range(1, 8):
+            for step in [1]:
                  nx = self.position[0] + dx * step
                  ny = self.position[1] + dy * step
             
