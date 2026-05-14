@@ -153,6 +153,7 @@ def move_service(request):
 
     if move_result.startswith("checkmate"):
         finish_game_service(sender_player.color, "black" if sender_player.color == "white" else "white", move_result)
+        
         return
 
     turn_change_service()
@@ -205,6 +206,9 @@ def finish_game_service(winner,loser,result):
         result=result
     )
     broadcast(response, reciever_list)
+    for player in player_list:
+        player.socket.close()
+    reset_server_service()
 
 
 def broadcast(response, reciever_list):

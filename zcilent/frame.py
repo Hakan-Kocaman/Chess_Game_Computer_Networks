@@ -51,6 +51,7 @@ class Frame(QObject):
         self.notations_mem=[]
         self.last_white_king_btn=None
         self.last_black_king_btn=None
+        self.game_started = False
         
         self.row_dict = {
             0: "a",
@@ -154,15 +155,19 @@ class Frame(QObject):
 
    
         
-        
+    def handle_game_started(self):
+        self.game_started = True
 
 
     def on_click(self):
         clicked=self.sender()
         piece=clicked.property("piece")
+        if not self.game_started:          
+            return
         print(clicked.property("notation"))
         print(clicked.property("piece"))
         print(self.myturn)
+        
 
         #ikinci tiklamaysa fonksiyonu cagir
         if self.selected_button is not None:
@@ -413,19 +418,8 @@ class Frame(QObject):
                 self.put_border(self.last_white_king_btn)
             else:
                 self.put_border(self.last_black_king_btn)
-        if self.myturn==False and parts[0]=="checkmate":
-            checkmate_box = QMessageBox(self.window)
-            checkmate_box.setWindowTitle("Checkmate")
-            checkmate_box.setText("Game over")
-            play_again_button=checkmate_box.addButton("Play again", QMessageBox.YesRole)
-            exit_button=checkmate_box.addButton("Exit", QMessageBox.NoRole)
-            checkmate_box.exec()
-            if checkmate_box.clickedButton()==play_again_button:
-                self.reset_all()
-                self.replay_signal.emit()
-            if checkmate_box.clickedButton()==exit_button:
-                self.reset_all()
-                self.stackwidget_signal.emit()
+
+
         oldbutton=self.buttons[oldx][oldy]
         newbutton=self.buttons[newx][newy]
 
@@ -435,6 +429,20 @@ class Frame(QObject):
         piece = newbutton.property("piece")
         if piece is not None:
             self.buttons[newx][newy].setIcon(QIcon(self.piece_icons[piece]))
+
+        if parts[0]=="checkmate":
+            checkmate_box = QMessageBox(self.window)
+            checkmate_box.setWindowTitle("Checkmate")
+            checkmate_box.setText("Game over")
+            play_again_button=checkmate_box.addButton("Play again", QMessageBox.YesRole)
+            
+            checkmate_box.exec()
+            if checkmate_box.clickedButton()==play_again_button:
+                self.reset_all()
+                
+                self.stackwidget_signal.emit()
+            
+        
 
 
 
@@ -507,6 +515,7 @@ class Frame(QObject):
         self.id=None
         self.myturn=False
         self.selected_button=None
+        self.game_started = False
 
         self.starter_board=[]
         self.server_game_board=[]
@@ -516,6 +525,7 @@ class Frame(QObject):
         self.last_white_king_btn=None
         self.last_black_king_btn=None
         self.line_edit.clear()
+        self.window.textEdit.clear()
 
         self.table_widget.setRowCount(0)
 

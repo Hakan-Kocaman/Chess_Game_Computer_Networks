@@ -60,16 +60,26 @@ class Connect:
                 msg.exec()
                 return
 
-              # Eski thread'i durdur
-            if hasattr(self, 'msg_thread') and self.msg_thread.isRunning():
-                self.msg_thread.quit()
-                self.msg_thread.wait()
+            # Eski thread sinyallerini kes, sonra durdur
+            if hasattr(self, 'msg_thread'):
+                try:
+                    self.msg_thread.possible_moves_received.disconnect()
+                    self.msg_thread.move_received.disconnect()
+                    self.msg_thread.turn_received.disconnect()
+                    self.msg_thread.chat_received.disconnect()
+                    self.msg_thread.check_received.disconnect()
+                    self.msg_thread.connection_lost.disconnect()
+                except Exception:
+                    pass
+                if self.msg_thread.isRunning():
+                    self.msg_thread.quit()
+                    self.msg_thread.wait(2000)
 
             # Eski socket'i kapat
             if hasattr(self, 'socket'):
                 try:
                     self.socket.close()
-                except:
+                except Exception:
                     pass
             # Sinyalleri bir kez bağlamak için flag
             if not hasattr(self, '_signals_connected'):
@@ -102,16 +112,14 @@ class Connect:
                     self.my_color=server_response["player_color"]
                     self.id=server_response["player_id"]
                     starter_game_board=server_response["game_board"]
+                    if server_response["state"] == "game":
+                        self.play_screen.game_started = True
                     
                     self.play_screen.create_buttons(self.my_color,self.id)
 
                     self.play_screen.load_board(starter_game_board)
 
-                    self.play_screen.move_signal.connect(self.send_move)
-                    self.play_screen.possible_moves_signal.connect(self.send_possible_moves_request)
-                    self.play_screen.chat_signal.connect(self.send_chat)
-                    self.play_screen.stackwidget_signal.connect(lambda: self.stack.setCurrentIndex(0))
-                    self.play_screen.replay_signal.connect(self.connect_pressed)
+                    
 
 
 
@@ -123,6 +131,7 @@ class Connect:
                     self.msg_thread.chat_received.connect(self.play_screen.handle_chat)
                     self.msg_thread.check_received.connect(self.play_screen.update_board_with_check)
                     self.msg_thread.connection_lost.connect(self.connection_lost)
+                    self.msg_thread.game_started.connect(self.play_screen.handle_game_started)
                     self.msg_thread.start()
                                     ###############
 
@@ -189,6 +198,7 @@ class messagethread(QThread):
     chat_received=Signal(str,str)
     check_received=Signal(str)
     connection_lost=Signal(int)
+    game_started=Signal()
 
     
     def __init__(self, socket,id):
@@ -222,13 +232,13 @@ class messagethread(QThread):
                         print(f"moveresultttttttt{received_packet.move_result}")
                         if received_packet.move_result.startswith("move"):
                             self.move_received.emit(received_packet.move_result)
-                        if received_packet.move_result.startswith("unsuccessful move"):
+                        elif received_packet.move_result.startswith("unsuccessful move"):
                             self.move_received.emit(received_packet.move_result)
-                        if received_packet.move_result.startswith("capture"):
+                        elif received_packet.move_result.startswith("capture"):
                             self.move_received.emit(received_packet.move_result)
-                        if received_packet.move_result.startswith("check"):
+                        elif received_packet.move_result.startswith("check"):
                             self.check_received.emit(received_packet.move_result)
-                        if received_packet.move_result.startswith("checkmate"):
+                        elif received_packet.move_result.startswith("checkmate"):
                             self.check_received.emit(received_packet.move_result)
                         
                         if received_packet.move_result!="unsuccessful move": 
@@ -240,16 +250,18 @@ class messagethread(QThread):
                                 # ben oynadım, sıra rakipte
                                 self.turn_received.emit(False)
 
-                elif received_packet.URL=="get_possible_moves":
+                if received_packet.URL=="get_possible_moves":
                     print(f"Olasi hamleler alindi: {received_packet.possible_moves}")
                     self.possible_moves_received.emit(received_packet.possible_moves)
 
-                elif received_packet.URL=="chat":
+                if received_packet.URL=="chat":
                     self.chat_received.emit(received_packet.sender,received_packet.message)
 
-                elif received_packet.URL=="connection_lost":
+                if received_packet.URL=="connection_lost":
                     self.connection_lost.emit(received_packet.who)
                     break
+                if received_packet.URL == "start_game":    # ← YENİ BLOK
+                    self.game_started.emit()
                     
                 
                 
