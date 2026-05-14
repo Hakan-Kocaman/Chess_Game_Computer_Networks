@@ -89,10 +89,6 @@ def handle_client(client_socket):
     # SOKETİ KAPAT VE SUNUCUYU YENİ OYUNA HAZIRLA
     client_socket.close()
     
-    try:
-        server.reset_server_all()
-    except Exception as e:
-        logger.error(f"Server resetlenirken hata oluştu: {e}")
     
         
 

@@ -14,6 +14,8 @@ def start_server():
     global current_turn, game_state, game_states
     while True:
         player_socket, address = socket_manager.server_socket.accept()
+        if global_variables.game_state == global_variables.game_states[1] and len(player_list) < 2:
+            reset_server_all()
         new_player = player(player_socket, address)
         logger.info(f"New player connected: {new_player.get_name()} from {address}")
         handle_player_connection(new_player)
@@ -42,6 +44,7 @@ def handle_player_connection(new_player):
     }
     handshake = pickle.dumps(initial_packet)
     new_player.socket.sendall(handshake) 
+    
 
     if len(player_list) > 1 and global_variables.game_state != global_variables.game_states[1]:  
         start_game_service()

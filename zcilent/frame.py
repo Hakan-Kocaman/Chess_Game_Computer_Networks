@@ -413,7 +413,7 @@ class Frame(QObject):
                 self.put_border(self.last_white_king_btn)
             else:
                 self.put_border(self.last_black_king_btn)
-        if self.myturn==False and parts[0]=="checkmate":
+        if parts[0]=="checkmate":
             checkmate_box = QMessageBox(self.window)
             checkmate_box.setWindowTitle("Checkmate")
             checkmate_box.setText("Game over")
