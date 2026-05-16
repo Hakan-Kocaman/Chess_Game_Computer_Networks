@@ -51,6 +51,8 @@ class ChessPiece(ABC):
                         break
                 if found_king:
                     break
+
+        return move_result
     # move_result olası değerler:
     # "unsuccessful move"                          → hamle geçersiz (possible moves dışı)
     # "move,fx,fy,tx,ty,color"                     → normal hamle
@@ -58,7 +60,7 @@ class ChessPiece(ABC):
     # "check,fx,fy,tx,ty,color"                    → rakip şah altında
     # "checkmate,fx,fy,tx,ty,color"                → rakip mat, oyun bitti
 
-        return move_result
+        
 
     def is_checkmate(self, king):
         from models.GameBoard import game_board

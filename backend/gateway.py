@@ -12,7 +12,7 @@ import controllers
 from logger import logger
 from dtos.client_requests import move_request,chat_request,get_possible_moves_request
 from dtos.server_responses import connection_lost_response
-from player import player_list, player_id_list
+from player import player_list, player_id_list, player_list_lock
 from services import reset_server_service
 
 # request= {
@@ -53,65 +53,39 @@ def handle_client(client_socket):
                 break
             
             request = pickle.loads(data)
-            # Not: Her paket için yeni thread açmak oyun anında sıra kaymalarına 
-            # sebep olabilir ama şu an çalışıyorsa dokunma.
             controller_handler(client_socket, request)
             
         except Exception as e:
             logger.error(f"Error receiving data from client: {e}")
             break
-
-
     
-    
-    found_player = None
-    for p in player_list:
-        if p.socket == client_socket:
-            found_player = p
-            client_socket.close()
-            player_list.remove(p)
-            player_id_list.append(p.id) 
-            break
-            
-    
-    if found_player is not None:
-        response = connection_lost_response(
-            URL="connection_lost",
-            sender=None,
-            who=found_player.id
-        )
-        
+    with player_list_lock:
+        found_player = None
+        for p in player_list:
+            if p.socket == client_socket:
+                found_player = p
+                client_socket.close()
+                player_list.remove(p)
+                player_id_list.append(p.id)
+                break
 
-    for player in player_list:
-        try:
-            player.socket.sendall(pickle.dumps(response))
-        except Exception as e:
-            logger.error(f"Error sending connection lost response to player {player.id}: {e}")
+        if found_player is not None:
+            response = connection_lost_response(
+                URL="connection_lost",
+                sender=None,
+                who=found_player.id
+            )
+            for player in player_list:
+                try:
+                    player.socket.sendall(pickle.dumps(response))
+                except Exception as e:
+                    logger.error(f"Error sending connection lost response to player {player.id}: {e}")
 
+            for player in player_list:
+                try:
+                    player.socket.close()
+                except Exception as e:
+                    logger.error(f"Error closing player socket: {e}")
 
-    for player in player_list:
-        try:
-            player.__del__()
-        except Exception as e:
-            logger.error(f"Error closing player socket: {e}")
-
-
-    
-    
-    try:
-        if len(player_list) == 0:  # ✅ sadece herkes çıktıysa reset et
-            reset_server_service()
-    except Exception as e:
-        logger.error(f"Server resetlenirken hata oluştu: {e}")
-    
-        
-
-        
-
-
-
-
-
-
-
-
+        if len(player_list) == 0:
+            reset_server_service()  
