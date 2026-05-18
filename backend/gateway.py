@@ -5,7 +5,7 @@ import os
 from backend import server
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-import threading
+
 import pickle
 import socket_manager
 import controllers
