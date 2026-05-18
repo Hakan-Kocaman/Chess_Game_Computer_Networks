@@ -206,13 +206,10 @@ def finish_game_service(winner,loser,result):
         result=result
     )
     broadcast(response, reciever_list)
-    for player in player_list:
-        player.socket.close()
+
     reset_server_service()
 
-    for player in player_list:
-        player.socket.close()
-    reset_server_service()
+
 
 
 def broadcast(response, reciever_list):
