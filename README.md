@@ -3,6 +3,11 @@
 A real-time two-player chess application built with a client-server architecture over TCP sockets.
 
 ---
+![Python](https://img.shields.io/badge/Language-Python-blue)
+![Socket Programming](https://img.shields.io/badge/Networking-TCP%20Sockets-green)
+![AWS EC2](https://img.shields.io/badge/Cloud-AWS%20EC2-orange)
+![Qt](https://img.shields.io/badge/GUI-Qt-yellow)
+---
 ## 👥 Authors
 
 - **Hakan Kocaman**
